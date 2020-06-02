@@ -5,10 +5,14 @@ import Home from 'views/home/Home'
 Vue.use(VueRouter)
 
   const routes = [
+  // {
+  //   path: '/',
+  //   name: 'Home',
+  //   component: Home
+  // },
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect:'/recommend'
   },
   {
     path: '/recommend',
