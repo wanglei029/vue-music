@@ -11,7 +11,7 @@ import 'assets/stylus/index.styl'
 fastclick.attach(document.body) //页面点击 300毫秒延迟
 
 Vue.use(VueLazyload, {
-  loading: require('assets/image/default.png')
+  loading: require('assets/image/lazy-default-qq.png')
 })
 
 Vue.config.productionTip = false
