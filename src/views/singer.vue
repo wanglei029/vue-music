@@ -12,6 +12,7 @@ import { getSingerList } from "api/singer";
 import { ERR_OK } from "api/config";
 import Singer from "common/js/singer";
 import ListView from "base/listview/listview";
+import {mapMutations} from 'vuex'
 
 const HOT_SINGER_LEN = 10;
 const HOT_NAME = "热门";
@@ -34,6 +35,7 @@ export default {
         /* 编程式导航 */
         path: `/singer/${singer.id}`
       });
+      this.setSinger(singer)
     },
     async _getSingerList() {
       let res = await getSingerList();
@@ -98,7 +100,17 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0);
       });
       return hot.concat(ret);
-    }
+    },
+    /* 通过扩展运算符的方式调mapMutations 做对象映射 */
+    ...mapMutations({
+      /* 把mutation的修改， 映射成一个方法名
+        对应的是mutation-types.js 中的 SET_SINGER 常量
+        做了这层映射以后 在代码中可以通过
+        this.setSinger(singer) 将数据singer传进来
+        实现数据提交
+      */
+      setSinger:'SET_SINGER' 
+    })
   }
 };
 </script>
