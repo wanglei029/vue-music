@@ -1,8 +1,9 @@
 <template>
   <div class="singer">
     <!-- 父容器的高度是固定的 子元素的内容高度要撑开 才能滚动 -->
-    <list-view :data='singers'></list-view>
-    歌手页面
+    <list-view @select="selectSinger" :data="singers"></list-view>
+    <!-- 使用router-view去承载子路由 -->
+    <router-view></router-view>
   </div>
 </template>
 
@@ -10,7 +11,7 @@
 import { getSingerList } from "api/singer";
 import { ERR_OK } from "api/config";
 import Singer from "common/js/singer";
-import ListView from 'base/listview/listview'
+import ListView from "base/listview/listview";
 
 const HOT_SINGER_LEN = 10;
 const HOT_NAME = "热门";
@@ -21,13 +22,19 @@ export default {
       singers: []
     };
   },
-  components:{
-    ListView,
+  components: {
+    ListView
   },
   created() {
     this._getSingerList();
   },
   methods: {
+    selectSinger(singer) {
+      this.$router.push({
+        /* 编程式导航 */
+        path: `/singer/${singer.id}`
+      });
+    },
     async _getSingerList() {
       let res = await getSingerList();
       if (res.code === ERR_OK) {
@@ -73,8 +80,8 @@ export default {
       });
       console.log(map);
       // 为了得到有序列表，我们需要处理 map
-      let ret = [];//剩余的
-      let hot = [];//热门
+      let ret = []; //剩余的
+      let hot = []; //热门
       // 遍历map
       for (let key in map) {
         let val = map[key]; //map的值 获取每一个元素
