@@ -1,91 +1,106 @@
 <template>
   <!-- /* 业务相关的基础组件 放在App.vue中 因为他不是路由相关的组件 是一个应用相关的播放器*/ -->
   <div class="player" v-show="playlist.length>0">
-    <div class="normal-player" v-show="fullScreen">
-      <div class="background">
-        <img width="100%" height="100%" :src="currentSong.image" />
-      </div>
-      <div class="top">
-        <div class="back" @click="back">
-          <i class="icon-back"></i>
+    <transition
+      name="normal"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
+      <div class="normal-player" v-show="fullScreen">
+        <div class="background">
+          <img width="100%" height="100%" :src="currentSong.image" />
         </div>
-        <h1 class="title" v-html="currentSong.name"></h1>
-        <h2 class="subtitle" v-html="currentSong.singer"></h2>
-      </div>
-      <div class="middle">
-        <div class="middle-l" ref="middleL">
-          <div class="cd-wrapper" ref="cdWrapper">
-            <div class="cd">
-              <img class="image" :src="currentSong.image" />
+        <div class="top">
+          <div class="back" @click="back">
+            <i class="icon-back"></i>
+          </div>
+          <h1 class="title" v-html="currentSong.name"></h1>
+          <h2 class="subtitle" v-html="currentSong.singer"></h2>
+        </div>
+        <div class="middle">
+          <div class="middle-l" ref="middleL">
+              <!-- ref="cdWrapper" 执行动画添加的引用 -->
+            <div class="cd-wrapper" ref="cdWrapper">
+              <div class="cd">
+                <img class="image" :src="currentSong.image" />
+              </div>
+            </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric"></div>
             </div>
           </div>
-          <div class="playing-lyric-wrapper">
-            <div class="playing-lyric"></div>
-          </div>
+          <scroll class="middle-r" ref="lyricList">
+            <div class="lyric-wrapper">
+              <div>
+                <p ref="lyricLine" class="text"></p>
+              </div>
+            </div>
+          </scroll>
         </div>
-        <scroll class="middle-r" ref="lyricList">
-          <div class="lyric-wrapper">
-            <div>
-              <p ref="lyricLine" class="text"></p>
+        <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="progress-wrapper">
+            <span class="time time-l"></span>
+            <div class="progress-bar-wrapper"></div>
+            <span class="time time-r"></span>
+          </div>
+          <div class="operators">
+            <div class="icon i-left">
+              <i></i>
+            </div>
+            <div class="icon i-left">
+              <i class="icon-prev"></i>
+            </div>
+            <div class="icon i-center">
+              <i></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon-next"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon"></i>
             </div>
           </div>
-        </scroll>
-      </div>
-      <div class="bottom">
-        <div class="dot-wrapper">
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </div>
-        <div class="progress-wrapper">
-          <span class="time time-l"></span>
-          <div class="progress-bar-wrapper"></div>
-          <span class="time time-r"></span>
-        </div>
-        <div class="operators">
-          <div class="icon i-left">
-            <i></i>
-          </div>
-          <div class="icon i-left">
-            <i class="icon-prev"></i>
-          </div>
-          <div class="icon i-center">
-            <i></i>
-          </div>
-          <div class="icon i-right">
-            <i class="icon-next"></i>
-          </div>
-          <div class="icon i-right">
-            <i class="icon"></i>
-          </div>
         </div>
       </div>
-    </div>
-    <div class="mini-player" v-show="!fullScreen" @click="open">
-      <div class="icon">
-        <img width="40" height="40" :src="currentSong.image" />
+    </transition>
+    <transition name="mini">
+      <div class="mini-player" v-show="!fullScreen" @click="open">
+        <div class="icon">
+          <img width="40" height="40" :src="currentSong.image" />
+        </div>
+        <div class="text">
+          <h2 class="name" v-html="currentSong.name"></h2>
+          <p class="desc" v-html="currentSong.singer"></p>
+        </div>
+        <div class="control">
+          <progress-circle>
+            <i class="icon-mini"></i>
+          </progress-circle>
+        </div>
+        <div class="control">
+          <i class="icon-playlist"></i>
+        </div>
       </div>
-      <div class="text">
-        <h2 class="name" v-html="currentSong.name"></h2>
-        <p class="desc" v-html="currentSong.singer"></p>
-      </div>
-      <div class="control">
-        <progress-circle>
-          <i class="icon-mini"></i>
-        </progress-circle>
-      </div>
-      <div class="control">
-        <i class="icon-playlist"></i>
-      </div>
-    </div>
+    </transition>
+
     <audio ref="audio" :src="currentSong.url"></audio>
   </div>
 </template>
 
 <script>
-import { mapGetters ,mapMutations} from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import Scroll from "base/scroll/scroll";
-import ProgressCircle from 'base/progress-circle/progress-circle'
-import ProgressBar from 'base/progress-bar/progress-bar'
+import ProgressCircle from "base/progress-circle/progress-circle";
+import ProgressBar from "base/progress-bar/progress-bar";
+import animations from "create-keyframe-animation";
+import {prefixStyle} from 'common/js/dom'
+const transform = prefixStyle('transform')
 export default {
   components: {
     Scroll,
@@ -96,16 +111,75 @@ export default {
     ...mapGetters(["fullScreen", "playlist", "currentSong"])
   },
   methods: {
-      back() {
-          /* 通过mutation去改变fullScreen */
-        this.setFullScrenn(false)
-      },
-      open(){
-        this.setFullScrenn(true)
-      },
-      ...mapMutations({
-          setFullScrenn:'SET_FULL_SCREEN'
-      })
+    back() {
+      /* 通过mutation去改变fullScreen */
+      this.setFullScrenn(false);
+    },
+    open() {
+      this.setFullScrenn(true);
+    },
+    enter(el, done) {
+      const { x, y, scale } = this._getPosAndScale();
+
+      let animation = {
+        0: {
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0,0,0) scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0,0,0) scale(1)`
+        }
+      };
+
+      animations.registerAnimation({
+        name: "move",
+        animation,
+        presets: {
+          duration: 400,
+          easing: "linear"
+        }
+      });
+
+      animations.runAnimation(this.$refs.cdWrapper, "move", done);
+    },
+    afterEnter() {
+      animations.unregisterAnimation("move");
+      this.$refs.cdWrapper.style.animation = "";
+    },
+    leave(el, done) {
+      this.$refs.cdWrapper.style.transition = "all 0.4s";
+      const { x, y, scale } = this._getPosAndScale();
+      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`;
+      this.$refs.cdWrapper.addEventListener("transitionend", done);
+    },
+    afterLeave() {
+      this.$refs.cdWrapper.style.transition = "";
+      this.$refs.cdWrapper.style[transform] = "";
+    },
+    /* _getPosAndScale() 获取初始位置和缩放比例 */
+    _getPosAndScale() {
+      //目标的宽度
+      const targetWidth = 40;
+      const paddingLeft = 40;
+      const paddingBottom = 30;
+      //   cd顶部的高度
+      const paddingTop = 80;
+      //   cd容器的宽度
+      const width = window.innerWidth * 0.8;
+      const scale = targetWidth / width;
+      const x = -(window.innerWidth / 2 - paddingLeft);
+      const y = window.innerHeight - paddingTop - width / 2 - paddingBottom;
+      return {
+        x,
+        y,
+        scale
+      };
+    },
+    ...mapMutations({
+      setFullScrenn: "SET_FULL_SCREEN"
+    })
   },
   mounted() {
     console.log("player组件", this.playlist);

@@ -160,3 +160,8 @@ action通过我们的提交mutation去修改我们的数据，然后我们的数
 <div class="mini-player" v-show="!fullScreen" @click="open"> 添加点击事件 open
 
 ```
+### 7-6 js创建CSS3动画 
+```
+npm i create-keyframe-animation  --save
+这个库提供了js编程方式去写css3动画
+```
