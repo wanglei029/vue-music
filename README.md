@@ -151,3 +151,12 @@ action通过我们的提交mutation去修改我们的数据，然后我们的数
 比如说修改了fullScreen normal-player这个dom 为true的时候就会显示
 
 ```
+### 7-4 播放器全屏
+```
+关闭全屏
+<div class="back" @click="back"> 顶部添加点击事件 back
+
+打开全屏
+<div class="mini-player" v-show="!fullScreen" @click="open"> 添加点击事件 open
+
+```
