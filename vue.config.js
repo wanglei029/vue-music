@@ -36,6 +36,18 @@ module.exports = {
           host: 'c.y.qq.com'
         },
       },
+      '/api/getMusicVKey': {
+        target: 'http://y.aishangvip.com/getMusicVKey',
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/getMusicVKey': ''
+        },
+        headers: {
+          referer: 'http://y.aishangvip.com/',
+          host: 'y.aishangvip.com'
+        },
+      },
       '/foo': {
         target: '<other_url>'
       }

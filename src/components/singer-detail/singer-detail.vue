@@ -1,44 +1,79 @@
-<!--
- * @Author: wanglei
- * @Date: 2020-06-08 01:39:15
- * @LastEditTime: 2020-06-08 23:52:45
- * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
- * @FilePath: \vue-music\src\components\singer-detail\singer-detail.vue
---> 
 <template>
   <transition name="slide">
-    <div class="singer-detail"></div>
+    <music-list :songs='songs' :bg-image='bgImage' :title="title"></music-list>
   </transition>
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from "vuex";
+import { getSingerDetail ,getSongVkey} from "api/singer";
+import { createSong } from "common/js/song";
+
 export default {
-  computed:{
+  components:{
+    MusicList:()=>import('components/music-list/music-list')
+  },
+  data() {
+    return {
+      songs: []
+    };
+  },
+  computed: {
+    title(){
+      return this.singer.name
+    },
+    bgImage(){
+      return this.singer.avatar
+    },
     ...mapGetters([
-      'singer', //对应的是store/getters 中的singer
+      "singer" //对应的是store/getters 中的singer
     ])
   },
   created() {
-    console.log('state中的singer',this.singer);
+    this._getDetail();
   },
+  methods: {
+    async _getDetail() {
+      /* 用户在操作过程中 在详情请页面不小心刷新了 那就让他直接回到 /singer路由下 */
+      /* 处理边界常用的方式 */
+      if (!this.singer.id) {
+        this.router.push("/singer");
+        return;
+      }
+      const res = await getSingerDetail(this.singer.id);
+      console.log(res);
+      if (res.code === 0) {
+        // console.log(res.data.list);
+        this.songs = this._normalizeSongs(res.data.list);
+        console.log("songs", this.songs);
+      }
+    },
+    _normalizeSongs(list) {
+      // 先定义return返回值
+      let ret = [];
+      list.forEach(item => {
+        let { musicData } = item;
+        // console.log("musicDate",musicData);
+        if (musicData.songid && musicData.albummid) {
+          getSongVkey(musicData.songmid).then(res => {
+            console.log('getSongVkey123',res);
+            if (res.response.req.code === 0) {
+              const songVkey = res.response.req.data.vkey;
+              const newSong = createSong(musicData, songVkey);
+              console.log(newSong);
+              ret.push(newSong);
+            }
+          });
+        }
+      });
+      return ret;
+    }
+  }
 };
 </script>
 
 <style lang="stylus" scoped>
 @import '~common/stylus/variable';
-
-.singer-detail {
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: $color-background;
-}
-
 .slide-enter-active, .slide-leave-active {
   transition: all 0.3s;
 }

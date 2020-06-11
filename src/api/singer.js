@@ -1,5 +1,6 @@
 import jsonp from 'common/js/jsonp'
-import {commonParams, options} from './config'
+import { commonParams, options } from './config'
+import axios from 'axios'
 
 export function getSingerList() {
   const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
@@ -35,3 +36,16 @@ export function getSingerDetail(singerId) {
   return jsonp(url, data, options)
 }
 
+export function getSongVkey(songmid) {
+  console.log('getSongVkey被调用',songmid);
+  const url = '/api/getMusicVKey'
+  const data = Object.assign({},  {
+    songmid: songmid
+  })
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    console.log('getSongVkey数据返回');
+    return Promise.resolve(res.data)
+  })
+}
