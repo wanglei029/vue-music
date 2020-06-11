@@ -7,7 +7,7 @@
     <h1 class="title" v-html="title"></h1>
     <!-- 通过计算属性 获取bgStyle -->
     <div class="bg-image" :style="bgStyle" ref="bgImage">
-      <div class="filter"></div>
+      <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="layer"></div>
     <scroll
@@ -79,6 +79,7 @@ export default {
       let translateY = Math.max(this.minTranslateY, newY);
       let zIndex = 0;
       let scale = 1;
+      let blur=0; //设置高斯模糊
       this.$refs.layer.style["transform"] = `translate3d(0,${translateY}px,0)`;
       this.$refs.layer.style[
         "webkittransform"
@@ -88,7 +89,12 @@ export default {
       if (newY > 0) {
         scale = 1 + percent;
         zIndex=10
+      }else{
+          blur=Math.min(20*percent,20)
       }
+      /* 高斯模糊 渐进增强 */
+      this.$refs.filter.style['backdrop-filter']=`blur(${blur}px)`
+      this.$refs.filter.style['webkitBackdrop-filter']=`blur(${blur}px)`
 
       /* 实现动态修改zIndex 控制列表滚动到顶部时 图片不被文字遮盖 */
       if (newY < this.minTranslateY) {
