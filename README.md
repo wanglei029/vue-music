@@ -137,3 +137,17 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ```
 ### 创建song类
   common/js/song
+
+###  7-3  播放器vuex的数据流程
+```
+我们通过定义的vuex以及一些事件的点击操作，去修改了vuex的一些数据，通过这一系列的操作行为，我们就实现了
+player组件的显示，这就是vuex的厉害之处
+
+比如说我们现在在歌手的详情页singer-detail.vue 去点击数据，之后会有歌单详情页或者是 排行榜 甚至是搜索结果
+当我们点击这个行为的时候(在song-list.vue中 @click="selectItem(song, index)") 我们都会提交action，然后action就会修改我们的state
+
+action通过我们的提交mutation去修改我们的数据，然后我们的数据就映射到player.vue中的数据 player的数据就会映射到他的dom上，
+<div class="normal-player" v-show="fullScreen">播放器</div>
+比如说修改了fullScreen normal-player这个dom 为true的时候就会显示
+
+```

@@ -27,6 +27,9 @@
       }
     },
     methods: {
+      /* 这是一个基础组件 不写任何业务逻辑 只派发事件
+        告诉外部组件 我这元素被点击了 以及我点击的元素是什么
+      */
       selectItem(item, index) {
         this.$emit('select', item, index)
       },
