@@ -25,7 +25,7 @@ let elementStyle = document.createElement('div').style
 
 let vendor = (() => {
   let transformNames = {
-    webkit: 'webkitTransform',
+    webkit: 'webkitTransform', /* 供应商前缀 */
     Moz: 'MozTransform',
     O: 'OTransform',
     ms: 'msTransform',

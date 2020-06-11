@@ -1,12 +1,18 @@
 <template>
   <div class="music-list">
-    <div class="back">
+    <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
     <!-- 为什么要使用v-html指令 因为出入的的title数据可能会包含转义字符 -->
     <h1 class="title" v-html="title"></h1>
     <!-- 通过计算属性 获取bgStyle -->
     <div class="bg-image" :style="bgStyle" ref="bgImage">
+      <div class="play-wrapper">
+        <div class="play" v-show="songs.length>0" ref="playBtn">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="layer"></div>
@@ -28,7 +34,10 @@
 <script>
 import Scroll from "base/scroll/scroll";
 import SongList from "base/song-list/song-list";
+import { prefixStyle } from "common/js/dom";
 const RESERVED_HEIGHT = 40;
+const transform = prefixStyle("transform");
+const backdrop = prefixStyle("backdrop-filter");
 export default {
   components: {
     Scroll,
@@ -71,6 +80,9 @@ export default {
   methods: {
     scroll(pos) {
       this.scrollY = pos.y;
+    },
+    back() {
+      this.$router.back();
     }
   },
   watch: {
@@ -79,37 +91,35 @@ export default {
       let translateY = Math.max(this.minTranslateY, newY);
       let zIndex = 0;
       let scale = 1;
-      let blur=0; //设置高斯模糊
-      this.$refs.layer.style["transform"] = `translate3d(0,${translateY}px,0)`;
-      this.$refs.layer.style[
-        "webkittransform"
-      ] = `translate3d(0,${translateY}px,0)`;
+      let blur = 0; //设置高斯模糊
+      /* transform变量根据浏览器厂商支持的情况 来加前缀 */
+      this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`;
       /* 实现列表向下拉 图片随着放大 */
       const percent = Math.abs(newY / this.imageHeight);
       if (newY > 0) {
         scale = 1 + percent;
-        zIndex=10
-      }else{
-          blur=Math.min(20*percent,20)
+        zIndex = 10;
+      } else {
+        blur = Math.min(20 * percent, 20);
       }
       /* 高斯模糊 渐进增强 */
-      this.$refs.filter.style['backdrop-filter']=`blur(${blur}px)`
-      this.$refs.filter.style['webkitBackdrop-filter']=`blur(${blur}px)`
+      this.$refs.filter.style["backdrop-filter"] = `blur(${blur}px)`;
+      this.$refs.filter.style["webkitBackdrop-filter"] = `blur(${blur}px)`;
 
       /* 实现动态修改zIndex 控制列表滚动到顶部时 图片不被文字遮盖 */
       if (newY < this.minTranslateY) {
         zIndex = 10;
         this.$refs.bgImage.style.paddingTop = 0;
         this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`;
+        /* 滚动到顶部按钮消失 */
+        this.$refs.playBtn.style.display='none'
       } else {
         this.$refs.bgImage.style.paddingTop = "70%";
         this.$refs.bgImage.style.height = 0;
+        this.$refs.playBtn.style.display=''
       }
       this.$refs.bgImage.style.zIndex = zIndex;
-      this.$refs.bgImage.style["transform"] = `scale(${scale})`;
-      this.$refs.bgImage.style[
-        "webkittransform"
-      ] = `scale(${scale})`;
+      this.$refs.bgImage.style[transform] = `scale(${scale})`;
     }
   }
 };
