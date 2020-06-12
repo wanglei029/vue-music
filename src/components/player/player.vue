@@ -53,14 +53,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
+            <div class="icon i-left" :class="disableCls">
               <!-- 播放上一首 -->
               <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
+            <div class="icon i-right" :class="disableCls">
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
@@ -128,6 +128,9 @@ export default {
     /* 迷你播放图标 */
     miniIcon() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
+    },
+    disableCls() {
+      return this.songReady ? "" : "disable";
     },
     ...mapGetters([
       "fullScreen",
@@ -210,7 +213,7 @@ export default {
         this.togglePlaying();
       }
       /* 点击了以后 */
-      this.songReady=false
+      this.songReady = false;
     },
     /* 切换到上一首歌 */
     prev() {
@@ -227,13 +230,15 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
-      this.songReady=false
+      this.songReady = false;
     },
     /* 控制切换歌曲 */
     ready() {
       this.songReady = true;
     },
-    error(){},
+    error() {
+      this.songReady = true;
+    },
     /* _getPosAndScale() 获取初始位置和缩放比例 */
     _getPosAndScale() {
       //目标的宽度
