@@ -51,19 +51,19 @@
           </div>
           <div class="operators">
             <div class="icon i-left">
-              <i></i>
+              <i class="icon-sequence"></i>
             </div>
             <div class="icon i-left">
               <i class="icon-prev"></i>
             </div>
             <div class="icon i-center">
-              <i></i>
+              <i class="icon-play"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon"></i>
+              <i class="icon icon-not-favorite"></i>
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@ export default {
     ProgressBar
   },
   computed: {
-    ...mapGetters(["fullScreen", "playlist", "currentSong"])
+    ...mapGetters(["fullScreen", "playlist", "currentSong",'playing'])
   },
   methods: {
     back() {
@@ -158,6 +158,9 @@ export default {
       this.$refs.cdWrapper.style.transition = "";
       this.$refs.cdWrapper.style[transform] = "";
     },
+    togglePlaying(){
+      this.setPlayingState(!this.playing)
+    },
     /* _getPosAndScale() 获取初始位置和缩放比例 */
     _getPosAndScale() {
       //目标的宽度
@@ -178,12 +181,21 @@ export default {
       };
     },
     ...mapMutations({
-      setFullScrenn: "SET_FULL_SCREEN"
+      setFullScrenn: "SET_FULL_SCREEN",
+      setPlayingState:"SET_PLAYING_STATE"
     })
   },
-  mounted() {
-    console.log("player组件", this.playlist);
-  }
+  watch: {
+    currentSong(){
+      this.$nextTick(()=>{
+        this.$refs.audio.play()
+      })
+    },
+    playing(newPlaying){
+      const audio=this.$refs.audio
+      newPlaying?audio.play():audio.pause()
+    }
+  },
 };
 </script>
 

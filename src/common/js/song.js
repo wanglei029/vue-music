@@ -48,7 +48,7 @@ export default class Song {
   我们要做的就是我们的数据可以直接应用到DOM上 而不需要再做 额外的处理
   所以我们一次性将singer处理好
 */
-export function createSong(musicData,songVkey) {
+export function createSong(musicData,songUrl) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
@@ -58,7 +58,8 @@ export function createSong(musicData,songVkey) {
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
     // url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
-    url: `http://isure.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?guid=9244517832&vkey=${songVkey}&uin=0&fromtag=66`
+    // url: `http://isure.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?guid=9244517832&vkey=${songVkey}&uin=0&fromtag=66`
+    url: `http://ws.stream.qqmusic.qq.com/${songUrl}`
   })
 }
 

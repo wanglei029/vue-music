@@ -56,10 +56,10 @@ export default {
         // console.log("musicDate",musicData);
         if (musicData.songid && musicData.albummid) {
           getSongVkey(musicData.songmid).then(res => {
-            console.log('getSongVkey123',res);
+            console.log('getSongVkey123',musicData.songmid,res);
             if (res.response.req.code === 0) {
-              const songVkey = res.response.req.data.vkey;
-              const newSong = createSong(musicData, songVkey);
+              const songUrl = res.response.playLists[0];
+              const newSong = createSong(musicData, songUrl);
               console.log(newSong);
               ret.push(newSong);
             }
