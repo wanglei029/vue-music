@@ -45,9 +45,9 @@
             <span class="dot"></span>
           </div>
           <div class="progress-wrapper">
-            <span class="time time-l"></span>
+            <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper"></div>
-            <span class="time time-r"></span>
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
             <div class="icon i-left">
@@ -93,7 +93,13 @@
       我们希望切换歌曲的时候 能够控制一下 不要连续的点击切换歌曲按钮 只有当歌曲ready的时候才能点击下一首歌
       可以用标志位来控制 songready
     -->
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
+    <audio
+      ref="audio"
+      :src="currentSong.url"
+      @canplay="ready"
+      @error="error"
+      @timeupdate="updateTime"
+    ></audio>
   </div>
 </template>
 
@@ -113,7 +119,8 @@ export default {
   },
   data() {
     return {
-      songReady: false
+      songReady: false, //歌曲是否加载完成
+      currentTime: 0
     };
   },
   computed: {
@@ -238,6 +245,25 @@ export default {
     },
     error() {
       this.songReady = true;
+    },
+    updateTime(e) {
+      this.currentTime = e.target.currentTime; //audio当前播放的时间 是一个可读写的属性
+    },
+    /* 格式化时间 */
+    format(interval) {
+      interval = interval | 0; //interval要向下取整 使用 (或) |0 操作 就是整数向下取整
+      const minute = (interval / 60) | 0;
+      const second = this._pad(interval % 60);
+      return `${minute}:${second}`;
+    },
+    /* 字符串后补0 */
+    _pad(num, n = 2) {
+      let len = num.toString().length;
+      while (len < n) {
+        num = "0" + num;
+        len++;
+      }
+      return num;
     },
     /* _getPosAndScale() 获取初始位置和缩放比例 */
     _getPosAndScale() {
