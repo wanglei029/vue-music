@@ -54,13 +54,14 @@
               <i class="icon-sequence"></i>
             </div>
             <div class="icon i-left">
-              <i class="icon-prev"></i>
+              <!-- 播放上一首 -->
+              <i @click="prev" class="icon-prev"></i>
             </div>
             <div class="icon i-center">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon-next"></i>
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -72,6 +73,7 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
+          <!-- 动态的绑定class :class="cdCls" 实现动画的播放暂停 -->
           <img :class="cdCls" width="40" height="40" :src="currentSong.image" />
         </div>
         <div class="text">
@@ -79,8 +81,8 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-            <!-- 添加播放点击事件 @click="togglePlaying" -->
-            <i @click.stop="togglePlaying" :class="miniIcon"></i>
+          <!-- 添加播放点击事件 @click="togglePlaying" -->
+          <i @click.stop="togglePlaying" :class="miniIcon"></i>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -108,18 +110,24 @@ export default {
   },
   computed: {
     /* cd图片旋转 */
-    cdCls(){
-      return this.playing? 'play':'play pause'
+    cdCls() {
+      return this.playing ? "play" : "play pause";
     },
     /* 底部播放图标 */
-    playIcon(){
-      return this.playing?'icon-pause':'icon-play'
+    playIcon() {
+      return this.playing ? "icon-pause" : "icon-play";
     },
     /* 迷你播放图标 */
-    miniIcon(){
-      return this.playing?'icon-pause-mini':'icon-play-mini'
+    miniIcon() {
+      return this.playing ? "icon-pause-mini" : "icon-play-mini";
     },
-    ...mapGetters(["fullScreen", "playlist", "currentSong", "playing"])
+    ...mapGetters([
+      "fullScreen",
+      "playlist",
+      "currentSong",
+      "playing",
+      "currentIndex"
+    ])
   },
   methods: {
     back() {
@@ -175,6 +183,28 @@ export default {
     togglePlaying() {
       this.setPlayingState(!this.playing);
     },
+    next() {
+      let index = this.currentIndex + 1;
+      if (index === this.playlist.length) {
+        index = 0;
+      }
+      this.setCurrentIndex(index);
+      /* 如果是暂停的时候 切换到下一首歌 */
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+    },
+    prev() {
+      let index = this.currentIndex - 1;
+      if (index === -1) {
+        index = this.playlist.length - 1;
+      }
+      /* 提交mutation修改state */
+      this.setCurrentIndex(index);
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+    },
     /* _getPosAndScale() 获取初始位置和缩放比例 */
     _getPosAndScale() {
       //目标的宽度
@@ -196,7 +226,8 @@ export default {
     },
     ...mapMutations({
       setFullScrenn: "SET_FULL_SCREEN",
-      setPlayingState: "SET_PLAYING_STATE"
+      setPlayingState: "SET_PLAYING_STATE",
+      setCurrentIndex: "SET_CURRENT_INDEX"
     })
   },
   watch: {
