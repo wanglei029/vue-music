@@ -16,7 +16,8 @@
 <script type="text/ecmascript-6">
   import {prefixStyle} from 'common/js/dom'
 
-  const progressBtnWidth = 16
+
+  const progressBtnWidth = 16 //按钮的宽度
   const transform = prefixStyle('transform')
 
   export default {
