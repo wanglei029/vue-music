@@ -21,7 +21,7 @@
         </div>
         <div class="middle">
           <div class="middle-l" ref="middleL">
-              <!-- ref="cdWrapper" 执行动画添加的引用 -->
+            <!-- ref="cdWrapper" 执行动画添加的引用 -->
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
                 <img class="image" :src="currentSong.image" />
@@ -57,7 +57,7 @@
               <i class="icon-prev"></i>
             </div>
             <div class="icon i-center">
-              <i class="icon-play"></i>
+              <i @click="togglePlaying" :class="playIcon"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next"></i>
@@ -79,9 +79,8 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <progress-circle>
-            <i class="icon-mini"></i>
-          </progress-circle>
+            <!-- 添加播放点击事件 @click="togglePlaying" -->
+            <i @click="togglePlaying" :class="miniIcon"></i>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -99,8 +98,8 @@ import Scroll from "base/scroll/scroll";
 import ProgressCircle from "base/progress-circle/progress-circle";
 import ProgressBar from "base/progress-bar/progress-bar";
 import animations from "create-keyframe-animation";
-import {prefixStyle} from 'common/js/dom'
-const transform = prefixStyle('transform')
+import { prefixStyle } from "common/js/dom";
+const transform = prefixStyle("transform");
 export default {
   components: {
     Scroll,
@@ -108,7 +107,15 @@ export default {
     ProgressBar
   },
   computed: {
-    ...mapGetters(["fullScreen", "playlist", "currentSong",'playing'])
+    /* 底部播放图标 */
+    playIcon(){
+      return this.playing?'icon-pause':'icon-play'
+    },
+    /* 迷你播放图标 */
+    miniIcon(){
+      return this.playing?'icon-pause-mini':'icon-play-mini'
+    },
+    ...mapGetters(["fullScreen", "playlist", "currentSong", "playing"])
   },
   methods: {
     back() {
@@ -151,15 +158,18 @@ export default {
     leave(el, done) {
       this.$refs.cdWrapper.style.transition = "all 0.4s";
       const { x, y, scale } = this._getPosAndScale();
-      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`;
+      this.$refs.cdWrapper.style[
+        transform
+      ] = `translate3d(${x}px,${y}px,0) scale(${scale})`;
       this.$refs.cdWrapper.addEventListener("transitionend", done);
     },
     afterLeave() {
       this.$refs.cdWrapper.style.transition = "";
       this.$refs.cdWrapper.style[transform] = "";
     },
-    togglePlaying(){
-      this.setPlayingState(!this.playing)
+    /* 设置播放器的状态 */
+    togglePlaying() {
+      this.setPlayingState(!this.playing);
     },
     /* _getPosAndScale() 获取初始位置和缩放比例 */
     _getPosAndScale() {
@@ -182,20 +192,23 @@ export default {
     },
     ...mapMutations({
       setFullScrenn: "SET_FULL_SCREEN",
-      setPlayingState:"SET_PLAYING_STATE"
+      setPlayingState: "SET_PLAYING_STATE"
     })
   },
   watch: {
-    currentSong(){
-      this.$nextTick(()=>{
-        this.$refs.audio.play()
-      })
+    currentSong() {
+      this.$nextTick(() => {
+        this.$refs.audio.play();
+      });
     },
-    playing(newPlaying){
-      const audio=this.$refs.audio
-      newPlaying?audio.play():audio.pause()
+    /* 监控播放器的状态 */
+    playing(newPlaying) {
+      const audio = this.$refs.audio;
+      this.$nextTick(() => {
+        newPlaying ? audio.play() : audio.pause();
+      });
     }
-  },
+  }
 };
 </script>
 
