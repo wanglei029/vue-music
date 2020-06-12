@@ -80,7 +80,7 @@
         </div>
         <div class="control">
             <!-- 添加播放点击事件 @click="togglePlaying" -->
-            <i @click="togglePlaying" :class="miniIcon"></i>
+            <i @click.stop="togglePlaying" :class="miniIcon"></i>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
