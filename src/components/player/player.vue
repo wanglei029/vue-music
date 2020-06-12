@@ -23,7 +23,7 @@
           <div class="middle-l" ref="middleL">
             <!-- ref="cdWrapper" 执行动画添加的引用 -->
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image" />
               </div>
             </div>
@@ -72,7 +72,7 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.image" />
+          <img :class="cdCls" width="40" height="40" :src="currentSong.image" />
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
@@ -107,6 +107,10 @@ export default {
     ProgressBar
   },
   computed: {
+    /* cd图片旋转 */
+    cdCls(){
+      return this.playing? 'play':'play pause'
+    },
     /* 底部播放图标 */
     playIcon(){
       return this.playing?'icon-pause':'icon-play'
