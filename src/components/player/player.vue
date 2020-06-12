@@ -89,8 +89,11 @@
         </div>
       </div>
     </transition>
-
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <!-- 歌曲从加载到播放 会派发事件@canplay  发生错误的时候派发@error
+      我们希望切换歌曲的时候 能够控制一下 不要连续的点击切换歌曲按钮 只有当歌曲ready的时候才能点击下一首歌
+      可以用标志位来控制 songready
+    -->
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 
@@ -107,6 +110,11 @@ export default {
     Scroll,
     ProgressCircle,
     ProgressBar
+  },
+  data() {
+    return {
+      songReady: false
+    };
   },
   computed: {
     /* cd图片旋转 */
@@ -181,9 +189,17 @@ export default {
     },
     /* 设置播放器的状态 */
     togglePlaying() {
+      /* 如果歌曲没有准备好 就不让点击 */
+      if (!this.songReady) {
+        return;
+      }
       this.setPlayingState(!this.playing);
     },
     next() {
+      /* 如果歌曲没有准备好 就不让点击 */
+      if (!this.songReady) {
+        return;
+      }
       let index = this.currentIndex + 1;
       if (index === this.playlist.length) {
         index = 0;
@@ -193,8 +209,15 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
+      /* 点击了以后 */
+      this.songReady=false
     },
+    /* 切换到上一首歌 */
     prev() {
+      /* 如果歌曲没有准备好 就不让点击 */
+      if (!this.songReady) {
+        return;
+      }
       let index = this.currentIndex - 1;
       if (index === -1) {
         index = this.playlist.length - 1;
@@ -204,7 +227,13 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
+      this.songReady=false
     },
+    /* 控制切换歌曲 */
+    ready() {
+      this.songReady = true;
+    },
+    error(){},
     /* _getPosAndScale() 获取初始位置和缩放比例 */
     _getPosAndScale() {
       //目标的宽度
