@@ -19,7 +19,12 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
+        <div
+          class="middle"
+          @touchstart.prevent="middleTouchStart"
+          @touchmove.prevent="middleTouchMove"
+          @touchend="middleTouchEnd"
+        >
           <div class="middle-l" ref="middleL">
             <!-- ref="cdWrapper" 执行动画添加的引用 -->
             <div class="cd-wrapper" ref="cdWrapper">
@@ -47,8 +52,8 @@
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot"></span>
-            <span class="dot"></span>
+            <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+            <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
           </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
@@ -126,6 +131,7 @@ import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
 import Lyric from "lyric-parser";
 const transform = prefixStyle("transform");
+const transitionDuration = prefixStyle("transitionDuration");
 export default {
   components: {
     Scroll,
@@ -138,7 +144,8 @@ export default {
       currentTime: 0,
       radius: 32,
       currentLyric: null,
-      currentLineNum: 0
+      currentLineNum: 0,
+      currentShow: "cd"
     };
   },
   computed: {
@@ -177,6 +184,12 @@ export default {
       /* sequenceList 随机播放列表 */
       "sequenceList"
     ])
+  },
+  created() {
+    /* 为什么要在created中定义数据 因为touch 并不需要添加getter 和 setter
+      data中的数据vue会自动添加getter和setter
+    */
+    this.touch = {};
   },
   methods: {
     back() {
@@ -343,13 +356,81 @@ export default {
       });
     },
     handleLyric({ lineNum, txt }) {
-      this.currentLineNum=lineNum
-      if(lineNum>5){
-        let lineEl=this.$refs.lyricLine[lineNum-5]
-        this.$refs.lyricList.scrollToElement(lineEl,1000)
-      }else{
-        this.$refs.lyricList.scrollTo(0,0,1000)
+      this.currentLineNum = lineNum;
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5];
+        this.$refs.lyricList.scrollToElement(lineEl, 1000);
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000);
       }
+    },
+    middleTouchStart(e) {
+      /* 定义一个标识位 表示已经初始化过了 */
+      this.touch.initiated = true;
+      console.log(e);
+      const touch = e.touches[0];
+      this.touch.startX = touch.pageX;
+      this.touch.startY = touch.pageY;
+    },
+    middleTouchMove(e) {
+      if (!this.touch.initiated) {
+        return;
+      }
+      const touch = e.touches[0];
+      const deltaX = touch.pageX - this.touch.startX;
+      const deltaY = touch.pageY - this.touch.startY;
+      /* 如果在纵轴偏差的绝对值大于横轴偏差的绝对值 就认为他是纵向滚动 我们只支持横向滚动 就什么都不做 */
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        return;
+      }
+      const left = this.currentShow === "cd" ? 0 : -window.innerWidth;
+      const offsetWidth = Math.min(
+        0,
+        Math.max(-window.innerWidth, left + deltaX)
+      );
+      /* 列表向左滚动的宽度 / 整个屏幕的宽度 = 滑动的比例*/
+      this.touch.percent = Math.abs(offsetWidth / window.innerWidth);
+      /* lyricList是一个vue组件 是没法直接操作他的DOM的 只能访问$el 才能访问DOM */
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`;
+      this.$refs.lyricList.$el.style[transitionDuration] = 0;
+      this.$refs.middleL.style.opacity = 1 - this.touch.percent;
+      this.$refs.middleL.style[transitionDuration] = 0;
+    },
+    middleTouchEnd(e) {
+      /* 两种情况从右向左滑 从左向右滑 */
+      let offsetWidth;
+      let opacity;
+      /* 当前定位现在cd播放页面 从右向左滑 滑动10% 就切换 */
+      if (this.currentShow === "cd") {
+        if (this.touch.percent > 0.1) {
+          offsetWidth = -window.innerWidth;
+          opacity = 0;
+          this.currentShow = "lyric";
+        } else {
+          offsetWidth = 0;
+          opacity = 1;
+        }
+      } else {
+        /* 从左向右滑超过10% 就偏移回去 */
+        if (this.touch.percent < 0.9) {
+          offsetWidth = 0;
+          this.currentShow = "cd";
+          opacity = 1;
+        } else {
+          offsetWidth = -window.innerWidth;
+          opacity = 0;
+        }
+      }
+      /* 歌词列表 和 cd 页面过度时长 */
+      const time = 300;
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`;
+      this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`;
+      this.$refs.middleL.style.opacity = opacity
+      this.$refs.middleL.style[transitionDuration] = `${time}ms`;
     },
     /* 字符串后补0 */
     _pad(num, n = 2) {
