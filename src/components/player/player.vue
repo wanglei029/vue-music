@@ -31,10 +31,16 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
-          <scroll class="middle-r" ref="lyricList">
+          <scroll class="middle-r" ref="lyricList" :data="currentLyric&&currentLyric.lines">
             <div class="lyric-wrapper">
-              <div>
-                <p ref="lyricLine" class="text"></p>
+              <div v-if="currentLyric">
+                <p
+                  ref="lyricLine"
+                  class="text"
+                  :class="{'current':currentLineNum===index}"
+                  v-for="(line,index) in currentLyric.lines"
+                  :key="index"
+                >{{line.txt}}</p>
               </div>
             </div>
           </scroll>
@@ -118,7 +124,7 @@ import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
 import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
-import Lyric from 'lyric-parser'
+import Lyric from "lyric-parser";
 const transform = prefixStyle("transform");
 export default {
   components: {
@@ -131,7 +137,8 @@ export default {
       songReady: false, //歌曲是否加载完成
       currentTime: 0,
       radius: 32,
-      currentLyric:null
+      currentLyric: null,
+      currentLineNum: 0
     };
   },
   computed: {
@@ -229,17 +236,17 @@ export default {
       }
       this.setPlayingState(!this.playing);
     },
-    end(){
+    end() {
       /* 如果当前播放模式是单曲循环 */
-      if(this.mode===playMode.loop){
-        this.loop()
-      }else{
-        this.next()
+      if (this.mode === playMode.loop) {
+        this.loop();
+      } else {
+        this.next();
       }
     },
-    loop(){
-      this.$refs.audio.currentTime=0
-      this.$refs.audio.play()
+    loop() {
+      this.$refs.audio.currentTime = 0;
+      this.$refs.audio.play();
     },
     next() {
       /* 如果歌曲没有准备好 就不让点击 */
@@ -325,12 +332,24 @@ export default {
       this.setCurrentIndex(index);
     },
     /* 获取歌词 */
-    getLyric(){
-      this.currentSong.getLyric().then((lyric)=>{
+    getLyric() {
+      this.currentSong.getLyric().then(lyric => {
         console.log(lyric);
-        this.currentLyric = new Lyric(lyric)
-        console.log('当前歌词',this.currentLyric);
-      })
+        this.currentLyric = new Lyric(lyric, this.handleLyric);
+        if (this.playing) {
+          this.currentLyric.play();
+        }
+        console.log("当前歌词", this.currentLyric);
+      });
+    },
+    handleLyric({ lineNum, txt }) {
+      this.currentLineNum=lineNum
+      if(lineNum>5){
+        let lineEl=this.$refs.lyricLine[lineNum-5]
+        this.$refs.lyricList.scrollToElement(lineEl,1000)
+      }else{
+        this.$refs.lyricList.scrollTo(0,0,1000)
+      }
     },
     /* 字符串后补0 */
     _pad(num, n = 2) {
@@ -376,8 +395,8 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.audio.play();
-        
-        console.log('歌词',this.getLyric());
+
+        console.log("歌词", this.getLyric());
       });
     },
     /* 监控播放器的状态 */
