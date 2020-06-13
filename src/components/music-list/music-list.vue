@@ -8,7 +8,7 @@
     <!-- 通过计算属性 获取bgStyle -->
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <div class="play" v-show="songs.length>0" ref="playBtn">
+        <div class="play" v-show="songs.length>0" ref="playBtn" @click="random">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -98,9 +98,14 @@ export default {
             index
         })
     },
+    random(){
+      console.log('随机播放');
+      this.randomPlay({list:this.songs})
+    },
     /* 代理actions */
     ...mapActions([
-        'selectPlay'
+        'selectPlay',
+        'randomPlay'
     ])
   },
   watch: {

@@ -52,8 +52,9 @@
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click="changMode">
+              <!-- 播放模式图标 -->
+              <i :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <!-- 播放上一首 -->
@@ -83,7 +84,7 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <progress-circle :radius='radius' :percent="percent">
+          <progress-circle :radius="radius" :percent="percent">
             <!-- 添加播放点击事件 @click="togglePlaying" -->
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
@@ -103,6 +104,7 @@
       @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
     ></audio>
   </div>
 </template>
@@ -114,6 +116,8 @@ import ProgressCircle from "base/progress-circle/progress-circle";
 import ProgressBar from "base/progress-bar/progress-bar";
 import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
+import { playMode } from "common/js/config";
+import { shuffle } from "common/js/util";
 const transform = prefixStyle("transform");
 export default {
   components: {
@@ -125,7 +129,7 @@ export default {
     return {
       songReady: false, //歌曲是否加载完成
       currentTime: 0,
-      radius:32
+      radius: 32
     };
   },
   computed: {
@@ -136,6 +140,13 @@ export default {
     /* 底部播放图标 */
     playIcon() {
       return this.playing ? "icon-pause" : "icon-play";
+    },
+    iconMode() {
+      return this.mode === playMode.sequence
+        ? "icon-sequence"
+        : this.mode === playMode.loop
+        ? "icon-loop"
+        : "icon-random";
     },
     /* 迷你播放图标 */
     miniIcon() {
@@ -152,7 +163,10 @@ export default {
       "playlist",
       "currentSong",
       "playing",
-      "currentIndex"
+      "currentIndex",
+      "mode",
+      /* sequenceList 随机播放列表 */
+      "sequenceList"
     ])
   },
   methods: {
@@ -213,6 +227,18 @@ export default {
       }
       this.setPlayingState(!this.playing);
     },
+    end(){
+      /* 如果当前播放模式是单曲循环 */
+      if(this.mode===playMode.loop){
+        this.loop()
+      }else{
+        this.next()
+      }
+    },
+    loop(){
+      this.$refs.audio.currentTime=0
+      this.$refs.audio.play()
+    },
     next() {
       /* 如果歌曲没有准备好 就不让点击 */
       if (!this.songReady) {
@@ -272,6 +298,30 @@ export default {
         this.togglePlaying();
       }
     },
+    /* 改变播放模式 */
+    changMode() {
+      const mode = (this.mode + 1) % 3;
+      this.setPlayMode(mode);
+      let list = null;
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList);
+      } else {
+        list = this.sequenceList;
+      }
+      this.resetCurrentIndex(list);
+      this.setPlayList(list);
+    },
+    /* 当播放模式改变的时候 重新设置 当前播放歌曲的 index 
+      播放列表改变 当前播放歌曲的index也会跟着改变 来保证currentSong.id不变
+    */
+    resetCurrentIndex(list) {
+      /* 在list中找到当前歌曲对应的索引 */
+      let index = list.findIndex(item => {
+        /* 查找符合条件的index 列表中歌曲的id 等于 当前播放歌曲的 id */
+        return item.id === this.currentSong.id;
+      });
+      this.setCurrentIndex(index);
+    },
     /* 字符串后补0 */
     _pad(num, n = 2) {
       let len = num.toString().length;
@@ -303,11 +353,17 @@ export default {
     ...mapMutations({
       setFullScrenn: "SET_FULL_SCREEN",
       setPlayingState: "SET_PLAYING_STATE",
-      setCurrentIndex: "SET_CURRENT_INDEX"
+      setCurrentIndex: "SET_CURRENT_INDEX",
+      setPlayMode: "SET_PLAY_MODE",
+      setPlayList: "SET_PLAY_LIST"
     })
   },
   watch: {
-    currentSong() {
+    currentSong(newSong, oldSong) {
+      /* 如果新歌曲的id 和 老歌曲的id 相等 就什么也不做*/
+      if (newSong.id === oldSong.id) {
+        return;
+      }
       this.$nextTick(() => {
         this.$refs.audio.play();
       });
