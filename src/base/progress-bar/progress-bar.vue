@@ -28,11 +28,13 @@
       }
     },
     created() {
+      /* 用于不同回调函数中共享数据 */
       this.touch = {}
     },
     methods: {
       progressTouchStart(e) {
         this.touch.initiated = true
+        /* 第一个手指横向坐标 */
         this.touch.startX = e.touches[0].pageX
         this.touch.left = this.$refs.progress.clientWidth
       },
@@ -46,6 +48,7 @@
       },
       progressTouchEnd() {
         this.touch.initiated = false
+        /* 向外派发一个事件 通知percent的改变 */
         this._triggerPercent()
       },
       progressClick(e) {
