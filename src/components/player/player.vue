@@ -118,6 +118,7 @@ import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
 import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
+import Lyric from 'lyric-parser'
 const transform = prefixStyle("transform");
 export default {
   components: {
@@ -129,7 +130,8 @@ export default {
     return {
       songReady: false, //歌曲是否加载完成
       currentTime: 0,
-      radius: 32
+      radius: 32,
+      currentLyric:null
     };
   },
   computed: {
@@ -322,6 +324,14 @@ export default {
       });
       this.setCurrentIndex(index);
     },
+    /* 获取歌词 */
+    getLyric(){
+      this.currentSong.getLyric().then((lyric)=>{
+        console.log(lyric);
+        this.currentLyric = new Lyric(lyric)
+        console.log('当前歌词',this.currentLyric);
+      })
+    },
     /* 字符串后补0 */
     _pad(num, n = 2) {
       let len = num.toString().length;
@@ -366,6 +376,8 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.audio.play();
+        
+        console.log('歌词',this.getLyric());
       });
     },
     /* 监控播放器的状态 */
