@@ -83,8 +83,10 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <!-- 添加播放点击事件 @click="togglePlaying" -->
-          <i @click.stop="togglePlaying" :class="miniIcon"></i>
+          <progress-circle :radius='radius' :percent="percent">
+            <!-- 添加播放点击事件 @click="togglePlaying" -->
+            <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -122,7 +124,8 @@ export default {
   data() {
     return {
       songReady: false, //歌曲是否加载完成
-      currentTime: 0
+      currentTime: 0,
+      radius:32
     };
   },
   computed: {
@@ -141,8 +144,8 @@ export default {
     disableCls() {
       return this.songReady ? "" : "disable";
     },
-    percent(){
-      return this.currentTime/this.currentSong.duration
+    percent() {
+      return this.currentTime / this.currentSong.duration;
     },
     ...mapGetters([
       "fullScreen",
@@ -262,12 +265,12 @@ export default {
       return `${minute}:${second}`;
     },
     /* 改变进度条 */
-    onProgressBarChange(percent){
-        /* 当前的播放时间 = 当前歌曲的总时长 * 进度条百分比 */
-        this.$refs.audio.currentTime=this.currentSong.duration*percent
-        if(!this.playing){
-          this.togglePlaying()
-        }
+    onProgressBarChange(percent) {
+      /* 当前的播放时间 = 当前歌曲的总时长 * 进度条百分比 */
+      this.$refs.audio.currentTime = this.currentSong.duration * percent;
+      if (!this.playing) {
+        this.togglePlaying();
+      }
     },
     /* 字符串后补0 */
     _pad(num, n = 2) {
