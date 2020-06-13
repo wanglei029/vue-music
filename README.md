@@ -6,8 +6,10 @@
  * @Description: In User Settings Edit
  * @FilePath: \vue-music\README.md
 --> 
+
 ## 配置服务器
-```
+
+``` 
   因为http请求的默认端口为80端口
   服务器上已经安装了appache服务器 且默认端口是80 
   所以当 y.aishangvip.com发起请求是默认访问的是80端口
@@ -61,6 +63,7 @@
         }
     }
 ```
+
 # vue-music
 
 ## Project setup
@@ -135,11 +138,14 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
     }
 
 ```
+
 ### 创建song类
+
   common/js/song
 
 ###  7-3  播放器vuex的数据流程
-```
+
+``` 
 我们通过定义的vuex以及一些事件的点击操作，去修改了vuex的一些数据，通过这一系列的操作行为，我们就实现了
 player组件的显示，这就是vuex的厉害之处
 
@@ -151,8 +157,10 @@ action通过我们的提交mutation去修改我们的数据，然后我们的数
 比如说修改了fullScreen normal-player这个dom 为true的时候就会显示
 
 ```
+
 ### 7-4 播放器全屏
-```
+
+``` 
 关闭全屏
 <div class="back" @click="back"> 顶部添加点击事件 back
 
@@ -160,8 +168,49 @@ action通过我们的提交mutation去修改我们的数据，然后我们的数
 <div class="mini-player" v-show="!fullScreen" @click="open"> 添加点击事件 open
 
 ```
+
 ### 7-6 js创建CSS3动画 
-```
+
+``` 
 npm i create-keyframe-animation  --save
 这个库提供了js编程方式去写css3动画
+```
+
+### vuex 管理歌单对象
+
+``` 
+1.先在state中定义歌单对象
+      /* 定义歌单对象 */
+    disc:{}
+2.添加mutation-types
+  export const SET_DISC='SET_DISC'
+3.在mutation中创建更改函数
+    [types.SET_DISC](state,disc){
+        state.disc=disc
+    }
+4.在getters中export出disc
+  export const disc = state => state.disc
+5.在recommend组建中 跳转是 设置state
+    import { mapMutations } from "vuex";
+    在methods中扩展mutation
+    methods:{
+        ...mapMutations({
+        setDisc: "SET_DISC"
+      })
+    },
+      selectItem(item) {
+      this.$router.push({
+        path: `/recommend/${item.dissid}`
+      });
+      this.setDisc(item);
+    },
+
+6.在disc.vue中接收数据
+  import { mapGetters } from "vuex";
+
+  computed: {
+    ...mapGetters([
+      "disc" //对应的是store/getters 中的disc
+    ])
+  },
 ```

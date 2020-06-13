@@ -28,7 +28,16 @@ Vue.use(VueRouter)
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import( '../views/recommend')
+    component: () => import( '../views/recommend'),
+    children:[
+      {
+        /* :id 表示的是以id为变量这样一个东西 我们可以传入不同的id值
+            这样我们可以跳到不同的子路由 去渲染不同的歌手详情页
+        */
+        path:':id',
+        component:()=>import('components/disc/disc')
+      }
+    ]
   },
   {
     path: '/rank',

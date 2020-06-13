@@ -30,6 +30,7 @@
         <loading></loading>
       </div>
     </scroll>
+    <!-- router-view 对应着二级路由的容器 -->
     <router-view></router-view>
   </div>
 </template>
@@ -87,7 +88,7 @@ export default {
       getDiscList().then(res => {
         if (res.code === ERR_OK) {
           this.discList = res.data.list;
-          console.log(this.discList);
+          console.log("discList",this.discList);
         }
       });
     },

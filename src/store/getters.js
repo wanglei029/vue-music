@@ -20,7 +20,8 @@ export const mode = state => state.mode
 // 当前播放下标
 export const currentIndex = state => state.currentIndex
 
-/* getters 去了可以做一个简单的代理之外 还可以作为计算属性 */
+/* getters 除了可以做一个简单的代理之外 还可以作为计算属性 */
 export const currentSong = (state) => {
     return state.playlist[state.currentIndex] || {}
 }
+export const disc = state => state.disc
