@@ -39,12 +39,12 @@ import Slider from "base/slider/slider";
 import Loading from "base/loading/loading";
 import Scroll from "base/scroll/scroll";
 import { getRecommend, getDiscList } from "api/recommend";
-import { playlistMixin } from "common/js/mixin";
+import { playlistMixin } from "common/js/mixin"; 
 import { ERR_OK } from "api/config";
 import { mapMutations } from "vuex";
 
 export default {
-  mixins: [playlistMixin],
+  mixins: [playlistMixin], 
   data() {
     return {
       recommends: [],
@@ -57,7 +57,7 @@ export default {
     this._getDiscList();
   },
   methods: {
-    handlePlaylist(playlist) {
+    handlePlaylist(playlist) { 
       const bottom = playlist.length > 0 ? "60px" : "";
 
       this.$refs.recommend.style.bottom = bottom;

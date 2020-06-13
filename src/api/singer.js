@@ -37,7 +37,7 @@ export function getSingerDetail(singerId) {
 }
 
 export function getSongVkey(songmid) {
-  console.log('getSongVkey被调用',songmid);
+  // console.log('getSongVkey被调用',songmid);
   const url = '/api/getMusicVKey'
   const data = Object.assign({},  {
     songmid: songmid
@@ -45,7 +45,7 @@ export function getSongVkey(songmid) {
   return axios.get(url, {
     params: data
   }).then((res) => {
-    console.log('getSongVkey数据返回');
+    // console.log('getSongVkey数据返回');
     return Promise.resolve(res.data)
   })
 }

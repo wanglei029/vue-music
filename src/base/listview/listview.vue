@@ -190,6 +190,7 @@ export default {
        /* 调用方法滚动到相应的位置 */
       this._scrollTo(anchorIndex);
     },
+    /*  */
     refresh() {
       this.$refs.listview.refresh();
     },

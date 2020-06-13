@@ -1,7 +1,7 @@
 <template>
-  <div class="singer">
+  <div class="singer" ref="singer">
     <!-- 父容器的高度是固定的 子元素的内容高度要撑开 才能滚动 -->
-    <list-view @select="selectSinger" :data="singers"></list-view>
+    <list-view @select="selectSinger" :data="singers" ref="list"></list-view>
     <!-- 使用router-view去承载子路由 -->
     <router-view></router-view>
   </div>
@@ -12,12 +12,14 @@ import { getSingerList } from "api/singer";
 import { ERR_OK } from "api/config";
 import Singer from "common/js/singer";
 import ListView from "base/listview/listview";
-import {mapMutations} from 'vuex'
+import { mapMutations } from "vuex";
+import { playlistMixin } from "common/js/mixin";
 
 const HOT_SINGER_LEN = 10;
 const HOT_NAME = "热门";
 
 export default {
+  mixins: [playlistMixin],
   data() {
     return {
       singers: []
@@ -30,19 +32,24 @@ export default {
     this._getSingerList();
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      this.$refs.singer.style.bottom=bottom
+      this.$refs.list.$el.bottom=bottom
+    },
     selectSinger(singer) {
       this.$router.push({
         /* 编程式导航 */
         path: `/singer/${singer.id}`
       });
-      this.setSinger(singer)
+      this.setSinger(singer);
     },
     async _getSingerList() {
       let res = await getSingerList();
       if (res.code === ERR_OK) {
         // console.log(res);
         this.singers = this._normalizeSinger(res.data.list);
-        console.log("歌手列表", this.singers);
+        // console.log("歌手列表", this.singers);
         // console.log("map",this._normalizeSinger(this.singers) );
       }
     },
@@ -80,7 +87,7 @@ export default {
           })
         );
       });
-      console.log(map);
+      // console.log(map);
       // 为了得到有序列表，我们需要处理 map
       let ret = []; //剩余的
       let hot = []; //热门
@@ -109,7 +116,7 @@ export default {
         this.setSinger(singer) 将数据singer传进来
         实现数据提交
       */
-      setSinger:'SET_SINGER' 
+      setSinger: "SET_SINGER"
     })
   }
 };
