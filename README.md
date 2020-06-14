@@ -214,3 +214,7 @@ npm i create-keyframe-animation  --save
     ])
   },
 ```
+### rank组件的调用顺序
+```
+  rank.vue > top-list.vue > music-list.vue > song-list.vue
+```

@@ -42,7 +42,16 @@ Vue.use(VueRouter)
   {
     path: '/rank',
     name: 'Rank',
-    component: () => import( '../views/rank')
+    component: () => import( '../views/rank'),
+    children:[
+      {
+        /* :id 表示的是以id为变量这样一个东西 我们可以传入不同的id值
+            这样我们可以跳到不同的子路由 去渲染不同的歌手详情页
+        */
+        path:':id',
+        component:()=>import('components/top-list/top-list')
+      }
+    ]
   },
   {
     path: '/search',

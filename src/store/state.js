@@ -15,7 +15,8 @@ const state ={
     // 当前播放下标
     currentIndex:-1,
     /* 定义歌单对象 */
-    disc:{}
+    disc:{},
+    topList:[]
 }
 /* 导出state */
 export default state
