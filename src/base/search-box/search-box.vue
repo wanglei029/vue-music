@@ -33,6 +33,7 @@
       }
     },
     created() {
+      /* 为什么要将 watch写在created中？ */
       this.$watch('query', debounce((newQuery) => {
         this.$emit('query', newQuery)
       }, 200))
