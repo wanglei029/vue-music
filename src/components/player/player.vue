@@ -368,6 +368,8 @@ export default {
     },
     /* 获取歌词 */
     getLyric() {
+      console.log("获取歌词测试",this.currentSong);
+      
       this.currentSong
         .getLyric()
         .then(lyric => {
@@ -377,7 +379,8 @@ export default {
             this.currentLyric.play();
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err);
           this.currentLyric = null;
           this.playingLyric = "";
           this.currentLineNum = 0;
