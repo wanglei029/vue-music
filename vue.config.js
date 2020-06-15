@@ -60,6 +60,18 @@ module.exports = {
           host: 'y.aishangvip.com'
         },
       },
+      '/api/getSearch': {
+        target: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/getSearch': ''
+        },
+        headers: {
+          referer: 'https://c.y.qq.com/',
+          host: 'c.y.qq.com'
+        },
+      },
       '/foo': {
         target: '<other_url>'
       }

@@ -26,6 +26,7 @@
         this.query = ''
       },
       setQuery(query) {
+        console.log('设置query');
         this.query = query
       },
       blur() {
@@ -33,8 +34,11 @@
       }
     },
     created() {
-      /* 为什么要将 watch写在created中？ */
+      /* 为什么要将 watch写在created中？
+        当query发生改变就像外部抛出 query事件
+      */
       this.$watch('query', debounce((newQuery) => {
+        console.log(newQuery);
         this.$emit('query', newQuery)
       }, 200))
     }

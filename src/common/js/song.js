@@ -1,6 +1,6 @@
-import {getLyric} from 'api/song'
-import {ERR_OK} from 'api/config'
-import {Base64} from 'js-base64'
+import { getLyric } from 'api/song'
+import { ERR_OK } from 'api/config'
+import { Base64 } from 'js-base64'
 
 /*
  创建song类
@@ -12,7 +12,7 @@ import {Base64} from 'js-base64'
 */
 export default class Song {
   /* 初始化song的constructor */
-  constructor({id, mid, singer, name, album, duration, image, url}) {
+  constructor({ id, mid, singer, name, album, duration, image, url }) {
     this.id = id
     this.mid = mid
     this.singer = singer
@@ -48,15 +48,15 @@ export default class Song {
   我们要做的就是我们的数据可以直接应用到DOM上 而不需要再做 额外的处理
   所以我们一次性将singer处理好
 */
-export function createSong(musicData,songUrl) {
+export function createSong(musicData, songUrl) {
   return new Song({
-    id: musicData.songid||musicData.album.id,
-    mid: musicData.songmid||musicData.album.mid,
+    id: musicData.songid || musicData.album.id,
+    mid: musicData.songmid || musicData.album.mid,
     singer: filterSinger(musicData.singer),
-    name: musicData.songname||musicData.name,
-    album: musicData.albumname||musicData.album.name,
+    name: musicData.songname || musicData.name,
+    album: musicData.albumname || musicData.album.name,
     duration: musicData.interval,
-    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid||musicData.album.pmid}.jpg?max_age=2592000`,
+    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid || musicData.album.pmid}.jpg?max_age=2592000`,
     // url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
     // url: `http://isure.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?guid=9244517832&vkey=${songVkey}&uin=0&fromtag=66`
     url: `http://ws.stream.qqmusic.qq.com/${songUrl}`

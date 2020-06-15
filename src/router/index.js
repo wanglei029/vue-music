@@ -56,7 +56,16 @@ Vue.use(VueRouter)
   {
     path: '/search',
     name: 'Search',
-    component: () => import( '../views/search')
+    component: () => import( '../views/search'),
+    children:[
+      {
+        /* :id 表示的是以id为变量这样一个东西 我们可以传入不同的id值
+            这样我们可以跳到不同的子路由 去渲染不同的歌手详情页
+        */
+        path:':id',
+        component:()=>import('components/singer-detail/singer-detail')
+      }
+    ]
   },
   {
     path: '/singer',
