@@ -19,6 +19,7 @@
       </li>
       <loading v-show="hasMore" title></loading>
     </ul>
+    <!-- 处理边界情况 检索不到数据 -->
     <div v-show="!hasMore && !result.length" class="no-result-wrapper">
       <no-result title="抱歉，暂无搜索结果"></no-result>
     </div>
@@ -60,10 +61,6 @@ export default {
       /* 判断是否加载完 标志位 */
       hasMore: true,
       result: [],
-      // 存放歌手直达数据
-      zhida: [],
-      // 存放第一次查询结果
-      firstResult: [],
       // array 存储加载下一页返回的内容
       array: []
     };
