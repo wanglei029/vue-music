@@ -20,7 +20,7 @@
               <i class="icon-clear"></i>
             </span>
           </h1>
-          <search-list @select="addQuery" :searches="searchHistory"></search-list>
+          <search-list @select="addQuery" @delete="deleteOne" :searches="searchHistory"></search-list>
         </div>
       </div>
     </div>
@@ -78,6 +78,10 @@ export default {
     saveSearch() {
       this.saveSearchHistory(this.query);
     },
+    /* 删除历史列表中的某一个元素 */
+    deleteOne(item){
+      this.deleteSearchHistory(item)
+    },
     /* 获取热门搜索词 */
     _getHotKey() {
       getHotKey().then(res => {
@@ -87,7 +91,7 @@ export default {
         }
       });
     },
-    ...mapActions(["saveSearchHistory"])
+    ...mapActions(["saveSearchHistory",'deleteSearchHistory'])
   }
 };
 </script>

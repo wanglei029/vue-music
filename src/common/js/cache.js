@@ -38,7 +38,7 @@ function insertArray(arr, val, compare, maxLen) {
     arr.pop()
   }
 }
-
+/* 删除数组中符合条件的元素 */
 function deleteFromArray(arr, compare) {
   const index = arr.findIndex(compare)
   if (index > -1) {
@@ -58,6 +58,7 @@ export function saveSearch(query) {
   return searches
 }
 
+/* 删除缓存列表中的数据 */
 export function deleteSearch(query) {
   let searches = storage.get(SEARCH_KEY, [])
   deleteFromArray(searches, (item) => {
