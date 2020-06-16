@@ -79,7 +79,12 @@ export default {
       this.saveSearchHistory(this.query);
     },
     /* 删除历史列表中的某一个元素 */
-    /* 这里只是 mapActions 中 deleteSearchHistory方法的代理 其实可以删除 在DOM元素上直接调用*/
+    /* 这里只是 mapActions 中 deleteSearchHistory方法的代理 
+        其实可以删除 在DOM元素上直接调用
+      有时候我们需要用method 去掉action 如果发现method做的事情仅仅只是调用action
+      以及他们参数完全一样 可以省略method的定义 因为...mapActions([])就已经相当于
+      向methods中挂方法了，可以直接把注入的方法用到DOM上 这样可以减少一些代码量
+    */
     // deleteOne(item){
     //   this.deleteSearchHistory(item)
     // },
