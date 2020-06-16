@@ -68,6 +68,7 @@ export function deleteSearch(query) {
   return searches
 }
 
+/* 清空历史记录 删除本地缓存 返回空数组*/
 export function clearSearch() {
   storage.remove(SEARCH_KEY)
   return []

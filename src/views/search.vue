@@ -16,11 +16,11 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear">
+            <span class="clear" @click="clearSearchHistory">
               <i class="icon-clear"></i>
             </span>
           </h1>
-          <search-list @select="addQuery" @delete="deleteOne" :searches="searchHistory"></search-list>
+          <search-list @select="addQuery" @delete="deleteSearchHistory" :searches="searchHistory"></search-list>
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@ import SearchBox from "base/search-box/search-box";
 import { getHotKey } from "api/search";
 import { ERR_OK } from "api/config";
 import Suggest from "components/suggest/suggest";
-import SearchList from 'base/search-list/search-list'
+import SearchList from "base/search-list/search-list";
 import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
@@ -79,9 +79,15 @@ export default {
       this.saveSearchHistory(this.query);
     },
     /* 删除历史列表中的某一个元素 */
-    deleteOne(item){
-      this.deleteSearchHistory(item)
-    },
+    /* 这里只是 mapActions 中 deleteSearchHistory方法的代理 其实可以删除 在DOM元素上直接调用*/
+    // deleteOne(item){
+    //   this.deleteSearchHistory(item)
+    // },
+    /* 清空历史记录 */
+    /* 这里只是 mapActions 中 clearSearchHistory方法的代理 其实可以删除 在DOM元素上直接调用*/
+    // deleteAll(){
+    //   this.clearSearchHistory()
+    // },
     /* 获取热门搜索词 */
     _getHotKey() {
       getHotKey().then(res => {
@@ -91,7 +97,11 @@ export default {
         }
       });
     },
-    ...mapActions(["saveSearchHistory",'deleteSearchHistory'])
+    ...mapActions([
+      "saveSearchHistory",
+      "deleteSearchHistory",
+      "clearSearchHistory"
+    ])
   }
 };
 </script>
