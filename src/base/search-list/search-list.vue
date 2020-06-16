@@ -3,6 +3,7 @@
     <transition-group name="list" tag="ul">
       <li :key="item" class="search-item" @click="selectItem(item)" v-for="item in searches">
         <span class="text">{{item}}</span>
+        <!--@click.stop防止事件冒泡 触发 li标签的  @click="selectItem(item)" -->
         <span class="icon" @click.stop="deleteOne(item)">
           <i class="icon-delete"></i>
         </span>
@@ -20,6 +21,9 @@
       }
     },
     methods: {
+      /* 向外派发事件 基础组件不写业务逻辑 只是告诉外部我被选择了 
+        以及选择是什么 点击的是什么 删除的是什么
+      */
       selectItem(item) {
         this.$emit('select', item)
       },

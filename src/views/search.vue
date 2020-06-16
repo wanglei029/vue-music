@@ -20,7 +20,7 @@
               <i class="icon-clear"></i>
             </span>
           </h1>
-          <search-list :searches="searchHistory"></search-list>
+          <search-list @select="addQuery" :searches="searchHistory"></search-list>
         </div>
       </div>
     </div>
