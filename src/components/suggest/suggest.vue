@@ -1,4 +1,5 @@
 <template>
+<!-- :beforeScroll="beforeScroll" -->
   <scroll
     ref="suggest"
     class="suggest"
@@ -105,6 +106,7 @@ export default {
         }
       });
     },
+    /* 监听列表滚动 派发事件  */
     listScroll() {
       this.$emit("listScroll");
     },
@@ -123,6 +125,14 @@ export default {
       } else {
         this.insertSong(item);
       }
+      /* 派发事件
+        我们不能在这个函数中写 保存歌曲历史的相关逻辑
+        因为 suggest组件本身做的事情是不包括去存取歌曲历史的 应该是外面做的事情
+        所以这个组件在作为自己要做的事情之后 就可以派发一个事件出去 
+        只有关心这个事件的组件 才会去处理 保存搜索历史 这样一个逻辑
+        这个逻辑是交由父组件它的外层组件去完成的
+        search组件可以监听 select事件
+      */
       this.$emit("select", item);
     },
     /* 获取 */

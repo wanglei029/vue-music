@@ -1,4 +1,5 @@
 import {playMode} from 'common/js/config'
+import{loadSearch} from 'common/js/cache'
 /* state中只保存最基础的数据 所有在基础数据可以计算而来的数据 都放在 getters中 */
 const state ={
     singer:{},
@@ -16,7 +17,9 @@ const state ={
     currentIndex:-1,
     /* 定义歌单对象 */
     disc:{},
-    topList:[]
+    topList:[],
+    /* 搜索的历史记录 从本地storage读取数据 loadSearch() */
+    searchHistory:loadSearch()
 }
 /* 导出state */
 export default state

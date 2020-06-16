@@ -37,6 +37,9 @@ export default {
       type: Boolean,
       default: false
     },
+    /* beforeScroll是什么意思？
+      因为better-scroll在他滚动的一开始 就会派发一个beforeScrollStart事件
+    */
     beforeScroll: {
       type: Boolean,
       default: false
@@ -82,6 +85,7 @@ export default {
 
       if (this.beforeScroll) {
         this.scroll.on("beforeScrollStart", () => {
+          /* 对外派发事件 */
           this.$emit("beforeScroll");
         });
       }

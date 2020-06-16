@@ -16,7 +16,10 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+      <!-- @listScroll 监听suggest组件派发的事件 实际上经过了两层传递
+        先从scroll传递到suggest 在传递到search
+       -->
+      <suggest @select="saveSearch" @listScroll="blurInput" :query="query"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -27,6 +30,7 @@ import SearchBox from 'base/search-box/search-box'
 import {getHotKey} from 'api/search'
 import{ERR_OK} from 'api/config'
 import Suggest from 'components/suggest/suggest'
+import {mapActions} from 'vuex'
 export default {
   components: {
     SearchBox,
@@ -51,6 +55,15 @@ export default {
       console.log('搜索框中query改变',this.query);
       this.query=query
     },
+    /* 手机端搜索的时候 当我们滚动搜索列表 就让输入框失去焦点 从而让键盘收起 */
+    blurInput(){
+      /* 在父组件search中调用子组件search-box中的方法 */
+      this.$refs.searchBox.blur()
+    },
+    /* 保存搜索结果 */
+    saveSearch(){
+      this.saveSearchHistory(this.query)
+    },
     /* 获取热门搜索词 */
     _getHotKey(){
       getHotKey().then(res=>{
@@ -59,7 +72,10 @@ export default {
           this.hotKey=res.data.hotkey.slice(0,10);
         }
       })
-    }
+    },
+    ...mapActions([
+      'saveSearchHistory'
+    ])
   },
 };
 </script>

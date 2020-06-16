@@ -200,7 +200,7 @@ npm i create-keyframe-animation  --save
     },
       selectItem(item) {
       this.$router.push({
-        path: `/recommend/${item.dissid}`
+        path: `/recommend/${item.dissid}` 
       });
       this.setDisc(item);
     },
@@ -214,7 +214,60 @@ npm i create-keyframe-animation  --save
     ])
   },
 ```
+
 ### rank组件的调用顺序
-```
+
+``` 
   rank.vue > top-list.vue > music-list.vue > song-list.vue
+```
+
+### 搜索历史记录 vuex数据
+
+``` 
+定义state
+    /* 搜索的历史记录 */
+    searchHistory:[]
+
+mutationtypes
+    /* mutation 的名字 要修改数组 searchHistory:[] */
+    export const SET_SEARCH_HISTORY='SET_SEARCH_HISTORY'
+
+设置mutations
+    [types.SET_SEARCH_HISTORY](state,history){
+        state.searchHistory=history
+    }
+
+设置取值操作getters
+    export const searchHistory = state => state.searchHistory
+
+设么时候去写searchHistory
+    在suggest.vue中选择列表点击列表项 触发写操作 当某个元素被点击会调用selectItem(item)
+    <ul class="suggest-list">
+      <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
+
+    selectItem(item) {
+      /* 派发事件
+        我们不能在这个函数中写 保存歌曲历史的相关逻辑
+        因为 suggest组件本身做的事情是不包括去存取歌曲历史的 应该是外面做的事情
+        所以这个组件在作为自己要做的事情之后 就可以派发一个事件出去 
+        只有关心这个事件的组件 才会去处理 保存搜索历史 这样一个逻辑
+        这个逻辑是交由父组件它的外层组件去完成的
+        search组件可以监听 select事件
+      */
+      this.$emit("select", item);
+    },
+
+    在search组件中监听 子组件suggest派发的事件select
+      <suggest @select="saveSearch" @listScroll="blurInput" :query="query"></suggest>
+      /* 保存搜索结果 */
+      saveSearch(){
+
+       },
+
+定义action操作
+    /* 将搜索历史保存到localStorage中 */
+    export const saveSearchHistory = function({commit},query){
+        
+    }
+
 ```
