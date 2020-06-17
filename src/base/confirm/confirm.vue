@@ -1,4 +1,5 @@
 <template>
+<!-- 弹窗过度 -->
   <transition name="confirm-fade">
     <div class="confirm" v-show="showFlag" @click.stop>
       <div class="confirm-wrapper">
@@ -32,16 +33,19 @@
     },
     data() {
       return {
+        /* 控制弹窗的显示隐藏 默认隐藏 */
         showFlag: false
       }
     },
     methods: {
+      /* 对外提供方法 控制弹窗显示 */
       show() {
         this.showFlag = true
       },
       hide() {
         this.showFlag = false
       },
+      /* 取消 向外派发事件 外部可以利用派发的事件做一些统计操作 */
       cancel() {
         this.hide()
         this.$emit('cancel')

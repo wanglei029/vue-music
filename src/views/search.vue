@@ -16,10 +16,14 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear" @click="clearSearchHistory">
+            <!-- 因为要在清空之前 弹窗确认 就不能直接调用 @click="clearSearchHistory" 
+              改为@click="showConfirm"           
+            -->
+            <span class="clear" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
           </h1>
+
           <search-list @select="addQuery" @delete="deleteSearchHistory" :searches="searchHistory"></search-list>
         </div>
       </div>
@@ -30,6 +34,8 @@
       -->
       <suggest @select="saveSearch" @listScroll="blurInput" :query="query"></suggest>
     </div>
+    <!-- 弹窗组件 -->
+    <confirm ref="confirm" text="是否清空所有搜索历史" confirmBtnText="清空" @confirm="clearSearchHistory"></confirm>
     <router-view></router-view>
   </div>
 </template>
@@ -40,12 +46,14 @@ import { getHotKey } from "api/search";
 import { ERR_OK } from "api/config";
 import Suggest from "components/suggest/suggest";
 import SearchList from "base/search-list/search-list";
+import Confirm from "base/confirm/confirm";
 import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     SearchBox,
     Suggest,
-    SearchList
+    SearchList,
+    Confirm
   },
   data() {
     return {
@@ -77,6 +85,10 @@ export default {
     /* 保存搜索结果 */
     saveSearch() {
       this.saveSearchHistory(this.query);
+    },
+    showConfirm() {
+      console.log("confirm");
+      this.$refs.confirm.show();
     },
     /* 删除历史列表中的某一个元素 */
     /* 这里只是 mapActions 中 deleteSearchHistory方法的代理 
