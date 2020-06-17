@@ -67,6 +67,7 @@ export default {
     };
   },
   methods: {
+    /* 代理的方法 */
     refresh() {
       this.$refs.suggest.refresh();
     },
