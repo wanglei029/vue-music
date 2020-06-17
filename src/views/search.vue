@@ -4,29 +4,33 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div class="shortcut-wrapper" v-show="!query">
-      <div class="shortcut">
-        <div class="hot-key">
-          <h1 class="title">热门搜索</h1>
-          <ul>
-            <li @click="addQuery(item.k)" class="item" v-for="item in hotKey" :key="item.n">
-              <span>{{item.k}}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="search-history" v-show="searchHistory.length">
-          <h1 class="title">
-            <span class="text">搜索历史</span>
-            <!-- 因为要在清空之前 弹窗确认 就不能直接调用 @click="clearSearchHistory" 
+      <scroll class="shortcut" :data="shortcut">
+        <!-- scroll 会根据第一个元素来计算高度 所以要将<div class="hot-key">
+        和<div class="search-history"> 包裹在一个div中-->
+        <div>
+          <div class="hot-key">
+            <h1 class="title">热门搜索</h1>
+            <ul>
+              <li @click="addQuery(item.k)" class="item" v-for="item in hotKey" :key="item.n">
+                <span>{{item.k}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="search-history" v-show="searchHistory.length">
+            <h1 class="title">
+              <span class="text">搜索历史</span>
+              <!-- 因为要在清空之前 弹窗确认 就不能直接调用 @click="clearSearchHistory" 
               改为@click="showConfirm"           
-            -->
-            <span class="clear" @click="showConfirm">
-              <i class="icon-clear"></i>
-            </span>
-          </h1>
+              -->
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
+            </h1>
 
-          <search-list @select="addQuery" @delete="deleteSearchHistory" :searches="searchHistory"></search-list>
+            <search-list @select="addQuery" @delete="deleteSearchHistory" :searches="searchHistory"></search-list>
+          </div>
         </div>
-      </div>
+      </scroll>
     </div>
     <div class="search-result" v-show="query">
       <!-- @listScroll 监听suggest组件派发的事件 实际上经过了两层传递
@@ -47,13 +51,15 @@ import { ERR_OK } from "api/config";
 import Suggest from "components/suggest/suggest";
 import SearchList from "base/search-list/search-list";
 import Confirm from "base/confirm/confirm";
+import Scroll from "base/scroll/scroll";
 import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     SearchBox,
     Suggest,
     SearchList,
-    Confirm
+    Confirm,
+    Scroll
   },
   data() {
     return {
@@ -65,6 +71,10 @@ export default {
     this._getHotKey();
   },
   computed: {
+    /* shortcut传给scroll的data来计算高度 */
+    shortcut(){
+      return this.hotKey.concat(this.searchHistory)
+    },
     ...mapGetters(["searchHistory"])
   },
   methods: {
