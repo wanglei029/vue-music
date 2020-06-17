@@ -4,7 +4,7 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut" :data="shortcut">
+      <scroll class="shortcut" :data="shortcut" ref="shortcut">
         <!-- scroll 会根据第一个元素来计算高度 所以要将<div class="hot-key">
         和<div class="search-history"> 包裹在一个div中-->
         <div>
@@ -129,7 +129,18 @@ export default {
       "deleteSearchHistory",
       "clearSearchHistory"
     ])
-  }
+  },
+  watch: {
+    /* 如果从搜索列表suggest组件 切到主页search上的话 query的变化实际上是从有到无的变化 */
+    query(newQuery){
+      if(!newQuery){
+        setTimeout(()=>{
+          this.$refs.shortcut.refresh()
+        },20)
+      }
+
+    }
+  },
 };
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
