@@ -1,8 +1,8 @@
 <template>
   <transition name="list-fade">
-      <!-- 在最外层监听@click="hide" 里面的事件会冒泡 -->
+    <!-- 在最外层监听@click="hide" 里面的事件会冒泡 -->
     <div class="playlist" v-show="showFlag" @click="hide">
-        <!-- @click.stop 阻止事件冒泡 点击内层列表不会关闭 -->
+      <!-- @click.stop 阻止事件冒泡 点击内层列表不会关闭 -->
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
@@ -13,10 +13,23 @@
             </span>
           </h1>
         </div>
-        <div class="list-content">
+        <!-- 在添加ref="listContent" 前
+        scroll组件已经初始化 但是不能滚动 为什么
+        因为 当我们调用show()的时候 是从display:none 切换为显示 从隐藏到显示
+        那显示以后 实际上DOM才能够正确的计算
+        这时候 要从新计算better-scroll 所以在show()的时候要去调用scroll的refresh方法
+        -->
+        <scroll ref="listContent" class="list-content" :data="sequenceList">
           <ul>
-            <li class="item" v-for="item of sequenceList" :key="item.id">
-              <i class="current"></i>
+            <li
+              ref="listItem"
+              class="item"
+              v-for="(item,index) in sequenceList"
+              :key="index"
+              @click="selectItem(item,index)"
+            >
+              <!-- :class="getCurrentIcon(item)" 当前播放歌曲的样式 -->
+              <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <span class="like">
                 <i class="icon-not-favorite"></i>
@@ -26,7 +39,7 @@
               </span>
             </li>
           </ul>
-        </div>
+        </scroll>
         <div class="list-operate">
           <div class="add">
             <i class="icon-add"></i>
@@ -42,24 +55,78 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters, mapMutations } from "vuex";
+import { playMode } from "common/js/config";
+import Scroll from "base/scroll/scroll";
 export default {
-    data() {
-        return {
-            showFlag:false
-        }
+  data() {
+    return {
+      showFlag: false
+    };
+  },
+  computed: {
+    ...mapGetters(["sequenceList", "currentSong", "playlist", "mode"])
+  },
+  methods: {
+    show() {
+      this.showFlag = true;
+      setTimeout(() => {
+        this.$refs.listContent.refresh();
+        /* 当组件刚显示的时候列表滚动到当前播放歌曲 */
+        this.scrollToCurrent(this.currentSong);
+      }, 20);
     },
-    computed: {
-        ...mapGetters(['sequenceList'])
+    hide() {
+      this.showFlag = false;
     },
-    methods: {
-        show(){
-            this.showFlag=true
-        },
-        hide(){
-            this.showFlag=false
-        }
+    getCurrentIcon(item) {
+      if (this.currentSong.id === item.id) {
+        return "icon-play";
+      }
+      return "";
     },
+    selectItem(item, index) {
+      /* 设置vuex的state setCurrentIndex */
+      /* 如果是随机播放 index需要重新设置 要找到当前播放歌曲在playlist中的索引 */
+      if (this.mode === playMode.random) {
+        index = this.playlist.findIndex(song => {
+          return (song.id = item.id);
+        });
+      }
+      /* 当前播放模式是顺序播放 或者单曲循环 index就是index */
+      this.setCurrentIndex(index);
+      this.setPlayingState(true);
+    },
+    /* 让列表滚动到当前播放的歌曲 */
+    scrollToCurrent(current) {
+      /* 从sequenceList 列表中找到 当前播放歌曲的索引 
+        找到当前歌曲在顺序列表中的索引 通过索引可以访问到我们是第几个li 然后滚动过去
+        什么时候滚动？
+        当我们歌曲切换成功以后滚动  添加watch观测 currentSong对的变化
+      */
+      const index = this.sequenceList.findIndex(song => {
+        return current.id === song.id;
+      });
+      /* Element 滚动到列表对应的元素 要滚动到每个li 要给li加引用 ref="listItem"*/
+      this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300);
+    },
+    ...mapMutations({
+      setCurrentIndex: "SET_CURRENT_INDEX",
+      setPlayingState: "SET_PLAYING_STATE"
+    })
+  },
+  watch: {
+    currentSong(newSong, oldSong) {
+        /* 当前组件不显示或者 newSong.id === oldSong.id 就什么都不做*/
+      if (!this.showFlag || newSong.id === oldSong.id) {
+        return;
+      }
+      this.scrollToCurrent(newSong);
+    }
+  },
+  components: {
+    Scroll
+  }
 };
 </script>
 
