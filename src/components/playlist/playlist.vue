@@ -34,7 +34,7 @@
               <span class="like">
                 <i class="icon-not-favorite"></i>
               </span>
-              <span class="delete">
+              <span class="delete" @click="deleteOne(item)">
                 <i class="icon-delete"></i>
               </span>
             </li>
@@ -109,6 +109,9 @@ export default {
       });
       /* Element 滚动到列表对应的元素 要滚动到每个li 要给li加引用 ref="listItem"*/
       this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300);
+    },
+    deleteOne(item){
+        
     },
     ...mapMutations({
       setCurrentIndex: "SET_CURRENT_INDEX",
