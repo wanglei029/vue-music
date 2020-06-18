@@ -15,9 +15,9 @@
         </div>
         <div class="list-content">
           <ul>
-            <li class="item">
+            <li class="item" v-for="item of sequenceList" :key="item.id">
               <i class="current"></i>
-              <span class="text"></span>
+              <span class="text">{{item.name}}</span>
               <span class="like">
                 <i class="icon-not-favorite"></i>
               </span>
@@ -42,11 +42,15 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
     data() {
         return {
             showFlag:false
         }
+    },
+    computed: {
+        ...mapGetters(['sequenceList'])
     },
     methods: {
         show(){
