@@ -509,6 +509,10 @@ export default {
   },
   watch: {
     currentSong(newSong, oldSong) {
+      /* 如果列表删除最后一首歌曲 已经没有哥去了 newSong就是一个空的 Object */
+      if(!newSong.id){
+        return 
+      }
       /* 如果新歌曲的id 和 老歌曲的id 相等 就什么也不做*/
       if (newSong.id === oldSong.id) {
         return;
