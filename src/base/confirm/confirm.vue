@@ -1,6 +1,7 @@
 <template>
 <!-- 弹窗过度 -->
   <transition name="confirm-fade">
+    <!-- 为了让confirm组件变得很独立不影响外层 添加@click.stop 阻止事件冒泡 -->
     <div class="confirm" v-show="showFlag" @click.stop>
       <div class="confirm-wrapper">
         <div class="confirm-content">

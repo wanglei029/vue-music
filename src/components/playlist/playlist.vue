@@ -8,7 +8,7 @@
           <h1 class="title">
             <i class="icon"></i>
             <span class="text"></span>
-            <span class="clear">
+            <span class="clear" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
           </h1>
@@ -20,7 +20,7 @@
         这时候 要从新计算better-scroll 所以在show()的时候要去调用scroll的refresh方法
         -->
         <scroll ref="listContent" class="list-content" :data="sequenceList">
-          <ul>
+          <transition-group name="list" tag="ul">
             <li
               ref="listItem"
               class="item"
@@ -38,7 +38,7 @@
                 <i class="icon-delete"></i>
               </span>
             </li>
-          </ul>
+          </transition-group>
         </scroll>
         <div class="list-operate">
           <div class="add">
@@ -50,6 +50,7 @@
           <span @click="hide">关闭</span>
         </div>
       </div>
+      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
     </div>
   </transition>
 </template>
@@ -58,6 +59,7 @@
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import { playMode } from "common/js/config";
 import Scroll from "base/scroll/scroll";
+import Confirm from 'base/confirm/confirm'
 export default {
   data() {
     return {
@@ -117,12 +119,22 @@ export default {
             this.hide()
         }
     },
+    showConfirm(){
+        this.$refs.confirm.show()
+    },
+    confirmClear(){
+        /* 调用actions中的方法 */
+        this.deleteSongList()
+        /* 清空列表以后 隐藏列表组件 */
+            this.hide()
+    },
     ...mapMutations({
       setCurrentIndex: "SET_CURRENT_INDEX",
       setPlayingState: "SET_PLAYING_STATE"
     }),
     ...mapActions([
-        'deleteSong'
+        'deleteSong',
+        'deleteSongList'
     ])
   },
   watch: {
@@ -135,7 +147,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Confirm
   }
 };
 </script>

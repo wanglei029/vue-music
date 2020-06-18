@@ -128,10 +128,22 @@ export const deleteSong = function ({ commit, state }, song) {
     commit(types.SET_PLAY_LIST, playlist)
     commit(types.SET_SEQUENCE_LIST, sequenceList)
     commit(types.SET_CURRENT_INDEX, currentIndex)
+    const playingState = playlist.length > 0
+    commit(types.SET_PLAYING_STATE, playingState)
+
     /* 如果整个列表全部删完了 长度为空*/
-    if (!playlist.length) {
-        commit(types.SET_PLAYING_STATE, false)
-    } else {
-        commit(types.SET_PLAYING_STATE, true)
-    }
+    /* 通过playingState优化下面的代码逻辑 */
+    // if (!playlist.length) {
+    //     commit(types.SET_PLAYING_STATE, false)
+    // } else {
+    //     commit(types.SET_PLAYING_STATE, true)
+    // }
+}
+
+/* 清除所有歌曲 */
+export const deleteSongList=function({commit}){
+    commit(types.SET_PLAY_LIST, [])
+    commit(types.SET_SEQUENCE_LIST, [])
+    commit(types.SET_CURRENT_INDEX, -1)
+    commit(types.SET_PLAYING_STATE, false)
 }
