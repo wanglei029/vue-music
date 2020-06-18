@@ -106,6 +106,7 @@
         </div>
       </div>
     </transition>
+    <playlist></playlist>
     <!-- 歌曲从加载到播放 会派发事件@canplay  发生错误的时候派发@error
       我们希望切换歌曲的时候 能够控制一下 不要连续的点击切换歌曲按钮 只有当歌曲ready的时候才能点击下一首歌
       可以用标志位来控制 songready
@@ -131,13 +132,15 @@ import { prefixStyle } from "common/js/dom";
 import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
 import Lyric from "lyric-parser";
+import Playlist from 'components/playlist/playlist'
 const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
 export default {
   components: {
     Scroll,
     ProgressCircle,
-    ProgressBar
+    ProgressBar,
+    Playlist
   },
   data() {
     return {
