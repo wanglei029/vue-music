@@ -1,7 +1,9 @@
 <template>
   <transition name="list-fade">
-    <div class="playlist">
-      <div class="list-wrapper">
+      <!-- 在最外层监听@click="hide" 里面的事件会冒泡 -->
+    <div class="playlist" v-show="showFlag" @click="hide">
+        <!-- @click.stop 阻止事件冒泡 点击内层列表不会关闭 -->
+      <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
             <i class="icon"></i>
@@ -32,7 +34,7 @@
           </div>
         </div>
         <div class="list-close">
-          <span>关闭</span>
+          <span @click="hide">关闭</span>
         </div>
       </div>
     </div>
@@ -40,7 +42,21 @@
 </template>
 
 <script>
-export default {};
+export default {
+    data() {
+        return {
+            showFlag:false
+        }
+    },
+    methods: {
+        show(){
+            this.showFlag=true
+        },
+        hide(){
+            this.showFlag=false
+        }
+    },
+};
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">

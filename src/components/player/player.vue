@@ -101,12 +101,12 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <playlist></playlist>
+    <playlist ref="playlist"></playlist>
     <!-- 歌曲从加载到播放 会派发事件@canplay  发生错误的时候派发@error
       我们希望切换歌曲的时候 能够控制一下 不要连续的点击切换歌曲按钮 只有当歌曲ready的时候才能点击下一首歌
       可以用标志位来控制 songready
@@ -398,6 +398,9 @@ export default {
         this.$refs.lyricList.scrollTo(0, 0, 1000);
       }
       this.playingLyric = txt;
+    },
+    showPlaylist(){
+      this.$refs.playlist.show()
     },
     middleTouchStart(e) {
       /* 定义一个标识位 表示已经初始化过了 */
