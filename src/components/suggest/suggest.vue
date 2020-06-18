@@ -1,5 +1,5 @@
 <template>
-<!-- :beforeScroll="beforeScroll" -->
+  <!-- :beforeScroll="beforeScroll" -->
   <scroll
     ref="suggest"
     class="suggest"
@@ -76,7 +76,7 @@ export default {
       this.hasMore = true;
       this.$refs.suggest.scrollTo(0, 0);
       search(this.query, this.page, this.showSinger, perpage).then(res => {
-        console.log("搜素结果", res);
+        console.log("搜素结果", res.code);
         if (res.code === ERR_OK) {
           this.result = this._genResult(res.data);
           this._checkMore(res.data);
@@ -115,8 +115,8 @@ export default {
       console.log(item);
       if (item.type === TYPE_SINGER) {
         const singer = new Singer({
-          id: item.singermid,
-          name: item.singername
+          id: item.singerMID,
+          name: item.singerName
         });
         console.log(`/search/${singer.id}`);
         this.$router.push({
@@ -139,7 +139,7 @@ export default {
     /* 获取 */
     getDisplayName(item) {
       if (item.type === TYPE_SINGER) {
-        return item.singername;
+        return item.singerName;
       } else {
         return `${item.name}-${item.singer}`;
       }
@@ -153,15 +153,19 @@ export default {
     },
     _genResult(data) {
       if (data.song) {
+        console.log(data);
+        console.log(data.zhida.type,data.zhida.singerID);
+        
         let list = this._normalizeSongs(data.song.list);
-        if (data.zhida && data.zhida.singerid) {
+        if (data.zhida.type===1 && data.zhida.zhida_singer.singerID) {
+          console.log("添加歌手直达");
           // this.result 中查找含有属性type的元素的下标 如果没有返回-1
-          let index = this.result.findIndex((item)=>{
-            return item.type
-          })
+          let index = this.result.findIndex(item => {
+            return item.type;
+          });
           // 如果this.result数组中 没有歌手直达元素 则向数组头部添加
           if (index === -1) {
-            list.unshift({ ...data.zhida, ...{ type: TYPE_SINGER } });
+            list.unshift({ ...data.zhida.zhida_singer, ...{ type: TYPE_SINGER } });
           }
         }
         return list;
@@ -171,11 +175,23 @@ export default {
       // 先定义return返回值
       let ret = [];
       list.forEach(musicData => {
-        if (musicData.songid && musicData.albummid) {
-          getSongVkey(musicData.songmid).then(res => {
+        // if (musicData.songid && musicData.albummid) {
+        // let musicData=item.album
+        console.log(musicData);
+        // console.log(musicData.grp[0].album.id);
+        if (musicData.album.id && musicData.album.mid) {
+          let mData = {
+            songid: musicData.id,
+            songmid: musicData.mid,
+            singer: musicData.singer,
+            songname: musicData.name,
+            albumname: musicData.album.name,
+            albummid:  musicData.album.pmid
+          };
+          getSongVkey(musicData.mid).then(res => {
             if (res.response.req.code === 0) {
               const songUrl = res.response.playLists[0];
-              const newSong = createSong(musicData, songUrl);
+              const newSong = createSong(mData, songUrl);
               // console.log(newSong);
               ret.push(newSong);
             }

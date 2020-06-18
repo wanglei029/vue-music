@@ -61,7 +61,7 @@ module.exports = {
         },
       },
       '/api/getSearch': {
-        target: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+        target: 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
         ws: true,
         changeOrigin: true,
         pathRewrite: {
