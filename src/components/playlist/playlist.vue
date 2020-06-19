@@ -59,7 +59,7 @@
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import { playMode } from "common/js/config";
 import Scroll from "base/scroll/scroll";
-import Confirm from 'base/confirm/confirm'
+import Confirm from "base/confirm/confirm";
 export default {
   data() {
     return {
@@ -90,11 +90,15 @@ export default {
     selectItem(item, index) {
       /* 设置vuex的state setCurrentIndex */
       /* 如果是随机播放 index需要重新设置 要找到当前播放歌曲在playlist中的索引 */
+      console.log("mode", this.mode, playMode.random);
       if (this.mode === playMode.random) {
+        console.log("随机播放模式");
+        console.log(this.playlist, item.id);
         index = this.playlist.findIndex(song => {
-          return (song.id = item.id);
+          return song.id === item.id;
         });
       }
+      console.log(index);
       /* 当前播放模式是顺序播放 或者单曲循环 index就是index */
       this.setCurrentIndex(index);
       this.setPlayingState(true);
@@ -112,34 +116,31 @@ export default {
       /* Element 滚动到列表对应的元素 要滚动到每个li 要给li加引用 ref="listItem"*/
       this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300);
     },
-    deleteOne(item){
-        this.deleteSong(item)
-        /* 当列表删空了就要隐藏列表组件 */
-        if(!this.playlist.length){
-            this.hide()
-        }
+    deleteOne(item) {
+      this.deleteSong(item);
+      /* 当列表删空了就要隐藏列表组件 */
+      if (!this.playlist.length) {
+        this.hide();
+      }
     },
-    showConfirm(){
-        this.$refs.confirm.show()
+    showConfirm() {
+      this.$refs.confirm.show();
     },
-    confirmClear(){
-        /* 调用actions中的方法 */
-        this.deleteSongList()
-        /* 清空列表以后 隐藏列表组件 */
-            this.hide()
+    confirmClear() {
+      /* 调用actions中的方法 */
+      this.deleteSongList();
+      /* 清空列表以后 隐藏列表组件 */
+      this.hide();
     },
     ...mapMutations({
       setCurrentIndex: "SET_CURRENT_INDEX",
       setPlayingState: "SET_PLAYING_STATE"
     }),
-    ...mapActions([
-        'deleteSong',
-        'deleteSongList'
-    ])
+    ...mapActions(["deleteSong", "deleteSongList"])
   },
   watch: {
     currentSong(newSong, oldSong) {
-        /* 当前组件不显示或者 newSong.id === oldSong.id 就什么都不做*/
+      /* 当前组件不显示或者 newSong.id === oldSong.id 就什么都不做*/
       if (!this.showFlag || newSong.id === oldSong.id) {
         return;
       }

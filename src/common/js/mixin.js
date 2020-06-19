@@ -2,7 +2,7 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 
-/* 多个组件都要处理相同 或类似的逻辑都 可放在 mixin中 */
+/* 多个组件都要处理相同 或类似的逻辑都 可放在 mixin中 多个组件共享同一个逻辑*/
 export const playlistMixin = {
   computed: {
     ...mapGetters([
@@ -26,7 +26,7 @@ export const playlistMixin = {
     }
   }
 }
-
+/* 播放器组件player 歌曲列表playlist 公用的逻辑 */
 export const playerMixin = {
   computed: {
     iconMode() {

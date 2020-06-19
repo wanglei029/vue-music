@@ -106,13 +106,14 @@ export default {
     selectItem(item,index){
         /* 首先要设置playlist */
         this.selectPlay({
-            list:this.songs,
+          /* 传songs的副本 否则会引起vuex报错 */
+            list:this.songs.slice(),
             index
         })
     },
     random(){
       console.log('随机播放');
-      this.randomPlay({list:this.songs})
+      this.randomPlay({list:this.songs.slice()})
     },
     /* 代理actions */
     ...mapActions([

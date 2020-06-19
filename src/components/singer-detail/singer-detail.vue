@@ -40,7 +40,8 @@ export default {
         this.$router.push("/singer"); //$router 要加$
         return;
       }
-      const res = await getSingerDetail(this.singer.id);
+      let self =this
+      const res = await getSingerDetail(self.singer.id);
       // console.log(res);
       if (res.code === 0) {
         // console.log(res.data.list);
