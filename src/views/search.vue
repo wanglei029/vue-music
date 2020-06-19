@@ -52,10 +52,10 @@ import Suggest from "components/suggest/suggest";
 import SearchList from "base/search-list/search-list";
 import Confirm from "base/confirm/confirm";
 import Scroll from "base/scroll/scroll";
-import { mapActions, mapGetters } from "vuex";
-import { playlistMixin } from "common/js/mixin";
+import { mapActions } from "vuex";
+import { playlistMixin, searchMixin } from "common/js/mixin";
 export default {
-  mixins: [playlistMixin],
+  mixins: [playlistMixin, searchMixin],
   components: {
     SearchBox,
     Suggest,
@@ -65,8 +65,9 @@ export default {
   },
   data() {
     return {
-      hotKey: [],
-      query: ""
+      hotKey: []
+      /* query从mixin中获取 */
+      // query: ""
     };
   },
   created() {
@@ -76,8 +77,9 @@ export default {
     /* shortcut传给scroll的data来计算高度 */
     shortcut() {
       return this.hotKey.concat(this.searchHistory);
-    },
-    ...mapGetters(["searchHistory"])
+    }
+    /* 从mixin中获取  ...mapGetters(["searchHistory"]) */
+    // ...mapGetters(["searchHistory"])
   },
   methods: {
     /* 迷你播放器和搜索列表高度自适应 */
@@ -92,24 +94,25 @@ export default {
       this.$refs.shortcut.refresh();
       this.$refs.searchResult.style.bottom = bottom;
     },
+    /* 从mixin中获取 addQuery(query) onQueryChange(query) blurInput()  saveSearch()*/
     /* 点击热门搜索词 自动添加到搜索框中 */
-    addQuery(query) {
-      this.$refs.searchBox.setQuery(query);
-    },
+    // addQuery(query) {
+    //   this.$refs.searchBox.setQuery(query);
+    // },
     /* 子组件search-box query事件 */
-    onQueryChange(query) {
-      console.log("搜索框中query改变", this.query);
-      this.query = query;
-    },
+    // onQueryChange(query) {
+    //   console.log("搜索框中query改变", this.query);
+    //   this.query = query;
+    // },
     /* 手机端搜索的时候 当我们滚动搜索列表 就让输入框失去焦点 从而让键盘收起 */
-    blurInput() {
-      /* 在父组件search中调用子组件search-box中的方法 */
-      this.$refs.searchBox.blur();
-    },
+    // blurInput() {
+    //   /* 在父组件search中调用子组件search-box中的方法 */
+    //   this.$refs.searchBox.blur();
+    // },
     /* 保存搜索结果 */
-    saveSearch() {
-      this.saveSearchHistory(this.query);
-    },
+    // saveSearch() {
+    //   this.saveSearchHistory(this.query);
+    // },
     showConfirm() {
       console.log("confirm");
       this.$refs.confirm.show();
@@ -139,8 +142,9 @@ export default {
       });
     },
     ...mapActions([
-      "saveSearchHistory",
-      "deleteSearchHistory",
+      /* 从mixin中获取 "saveSearchHistory","deleteSearchHistory", */
+      // "saveSearchHistory",
+      // "deleteSearchHistory",
       "clearSearchHistory"
     ])
   },

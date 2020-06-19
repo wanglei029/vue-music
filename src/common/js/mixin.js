@@ -1,6 +1,6 @@
-import {mapGetters, mapMutations, mapActions} from 'vuex'
-import {playMode} from 'common/js/config'
-import {shuffle} from 'common/js/util'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/util'
 
 /* 多个组件都要处理相同 或类似的逻辑都 可放在 mixin中 多个组件共享同一个逻辑*/
 export const playlistMixin = {
@@ -80,7 +80,7 @@ export const playerMixin = {
     },
     ...mapMutations({
       setPlayMode: 'SET_PLAY_MODE',
-      setPlaylist: 'SET_PLAYLIST',
+      setPlaylist: 'SET_PLAY_LIST',
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE'
     }),
@@ -91,6 +91,7 @@ export const playerMixin = {
   }
 }
 
+/* add-song组件 和 search组件共用的逻辑 */
 export const searchMixin = {
   data() {
     return {
@@ -99,26 +100,26 @@ export const searchMixin = {
     }
   },
   computed: {
-    ...mapGetters([
-      'searchHistory'
-    ])
+    ...mapGetters(["searchHistory"])
   },
   methods: {
+    /* 子组件search-box query事件 */
     onQueryChange(query) {
-      this.query = query
+      this.query = query;
     },
     blurInput() {
-      this.$refs.searchBox.blur()
+      /* 在父组件search中调用子组件search-box中的方法 */
+      this.$refs.searchBox.blur();
     },
     addQuery(query) {
       this.$refs.searchBox.setQuery(query)
     },
     saveSearch() {
-      this.saveSearchHistory(this.query)
+      this.saveSearchHistory(this.query);
     },
     ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory'
+      "saveSearchHistory",
+      "deleteSearchHistory"
     ])
   }
 }

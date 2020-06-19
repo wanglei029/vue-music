@@ -134,9 +134,12 @@ import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
 import Lyric from "lyric-parser";
 import Playlist from 'components/playlist/playlist'
+import {playerMixin} from 'common/js/mixin'
+
 const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
 export default {
+  mixins:[playerMixin],
   components: {
     Scroll,
     ProgressCircle,
@@ -163,13 +166,14 @@ export default {
     playIcon() {
       return this.playing ? "icon-pause" : "icon-play";
     },
-    iconMode() {
-      return this.mode === playMode.sequence
-        ? "icon-sequence"
-        : this.mode === playMode.loop
-        ? "icon-loop"
-        : "icon-random";
-    },
+    /* iconMode() 从mixin中引入 */
+    // iconMode() {
+    //   return this.mode === playMode.sequence
+    //     ? "icon-sequence"
+    //     : this.mode === playMode.loop
+    //     ? "icon-loop"
+    //     : "icon-random";
+    // },
     /* 迷你播放图标 */
     miniIcon() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
