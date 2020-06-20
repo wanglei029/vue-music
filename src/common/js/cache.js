@@ -97,6 +97,7 @@ export function loadPlay() {
   return storage.get(PLAY_KEY, [])
 }
 
+/* 保存收藏列表到本地 */
 export function saveFavorite(song) {
   let songs = storage.get(FAVORITE_KEY, [])
   insertArray(songs, song, (item) => {

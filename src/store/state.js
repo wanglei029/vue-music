@@ -1,5 +1,5 @@
 import {playMode} from 'common/js/config'
-import{loadSearch,loadPlay} from 'common/js/cache'
+import{loadSearch,loadPlay,loadFavorite} from 'common/js/cache'
 /* state中只保存最基础的数据 所有在基础数据可以计算而来的数据 都放在 getters中 */
 const state ={
     singer:{},
@@ -21,7 +21,9 @@ const state ={
     /* 搜索的历史记录 从本地storage读取数据 loadSearch() */
     searchHistory:loadSearch(),
     /* 播放历史 */
-    playHistory:loadPlay()
+    playHistory:loadPlay(),
+    /* 收藏列表 */
+    favoriteList:loadFavorite()
 }
 /* 导出state */
 export default state
