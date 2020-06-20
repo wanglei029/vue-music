@@ -81,6 +81,11 @@ Vue.use(VueRouter)
       }
     ]
   },
+  {
+    path: '/user',
+    name: 'User',
+    component: () => import( 'components/user-center/user-center'),
+  },
   // {
   //   path: '/',
   //   name: '',
