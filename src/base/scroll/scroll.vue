@@ -44,6 +44,7 @@ export default {
       type: Boolean,
       default: false
     },
+    /* 默认20毫秒刷新 */
     refreshDelay: {
       type: Number,
       default: 20

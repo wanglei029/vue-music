@@ -19,7 +19,7 @@
         那显示以后 实际上DOM才能够正确的计算
         这时候 要从新计算better-scroll 所以在show()的时候要去调用scroll的refresh方法
         -->
-        <scroll ref="listContent" class="list-content" :data="sequenceList">
+        <scroll ref="listContent" :refreshDelay="refreshDelay" class="list-content" :data="sequenceList">
           <transition-group name="list" tag="ul">
             <li
               ref="listItem"
@@ -67,7 +67,8 @@ export default {
   mixins:[playerMixin],
   data() {
     return {
-      showFlag: false
+      showFlag: false,
+      refreshDelay:100
     };
   },
   computed: {

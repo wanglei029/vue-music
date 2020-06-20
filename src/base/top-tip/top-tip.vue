@@ -7,6 +7,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+/* 顶部提示框交互组件 */
   export default {
     props: {
       delay: {
@@ -22,6 +23,7 @@
     methods: {
       show() {
         this.showFlag = true
+        /* 反复点击的时候清理timer */
         clearTimeout(this.timer)
         this.timer = setTimeout(() => {
           this.hide()
