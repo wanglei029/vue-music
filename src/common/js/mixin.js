@@ -60,6 +60,7 @@ export const playerMixin = {
       this.setCurrentIndex(index)
     },
     toggleFavorite(song) {
+      /* 如果歌曲在收藏列表中就取消收藏 否则就添加到收藏列表 */
       if (this.isFavorite(song)) {
         this.deleteFavoriteList(song)
       } else {
@@ -72,6 +73,7 @@ export const playerMixin = {
       }
       return 'icon-not-favorite'
     },
+    /* 查看当前歌曲是否在favoriteList中 */
     isFavorite(song) {
       const index = this.favoriteList.findIndex((item) => {
         return item.id === song.id
