@@ -14,13 +14,13 @@
       <div class="shortcut" v-show="!query">
         <switches :switches="switches" :currentIndex="currentIndex" @switch="switchItem"></switches>
         <div class="list-wrapper">
-          <scroll class="list-scroll" v-if="currentIndex===0" :data="playHistory">
+          <scroll ref="songList" class="list-scroll" v-if="currentIndex===0" :data="playHistory">
             <div class="list-inner">
               <song-list :songs="playHistory" @select="selectSong"></song-list>
             </div>
           </scroll>
           <!-- :data="searchHistory" 数据定义在mixin中  -->
-          <scroll class="list-scroll" v-if="currentIndex===1" :data="searchHistory">
+          <scroll ref="searchList" class="list-scroll" v-if="currentIndex===1" :data="searchHistory">
             <div class="list-inner">
               <!-- 从mixin中引入 deleteSearchHistory addQuery-->
               <search-list
@@ -72,6 +72,13 @@ export default {
   methods: {
     show() {
       this.showFlag = true;
+      setTimeout(()=>{
+        if(this.currentIndex===0){
+          this.$refs.songList.refresh()
+        }else{
+          this.$refs.searchList.refresh()
+        }
+      },20)
     },
     hide() {
       this.showFlag = false;
