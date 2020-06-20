@@ -18,12 +18,7 @@
           </div>
         </scroll>
         <!-- :data="searchHistory" 数据定义在mixin中  -->
-        <scroll
-          ref="playList"
-          class="list-scroll"
-          v-if="currentIndex===1"
-          :data="playHistory"
-        >
+        <scroll ref="playList" class="list-scroll" v-if="currentIndex===1" :data="playHistory">
           <div class="list-inner">
             <song-list :songs="playHistory" @select="selectSong"></song-list>
           </div>
@@ -35,11 +30,13 @@
 
 <script>
 import Switches from "base/switches/switches";
-import Scroll from 'base/scroll/scroll'
-import SongList from 'base/song-list/song-list'
-import Song from 'common/js/song'
+import Scroll from "base/scroll/scroll";
+import SongList from "base/song-list/song-list";
+import Song from "common/js/song";
 import { mapGetters, mapActions } from "vuex";
+import { playlistMixin } from "common/js/mixin";
 export default {
+  mixins: [playlistMixin],
   computed: {
     ...mapGetters(["favoriteList", "playHistory"])
   },
@@ -55,27 +52,31 @@ export default {
     };
   },
   methods: {
+    /* handlePlaylist mixin中传入的方法 */
+    handlePlaylist(playlist) {
+      const bottom = playlist.length> 0 ? "60px" : "";
+      this.$refs.listWrapper.style.bottom = bottom;
+      this.$refs.favoriteList && this.$refs.favoriteList.refresh();
+      this.$refs.playList && this.$refs.playList.refresh();
+    },
     switchItem(index) {
       this.currentIndex = index;
     },
-    selectSong(song){
-      this.insertSong(new Song(song))
+    selectSong(song) {
+      this.insertSong(new Song(song));
     },
-    back(){
-      this.$router.back()
+    back() {
+      this.$router.back();
     },
-    random(){
-      let list=this.currentIndex===0?this.favoriteList:this.playHistory
+    random() {
+      let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory;
       /* list 不是song的实例要用 new Song()包装 因为getLyric获取歌词的方法只有Song的实例才有*/
-      list=list.map((song)=>{
-        return new Song(song)
-      })
-      this.randomPlay({list})
+      list = list.map(song => {
+        return new Song(song);
+      });
+      this.randomPlay({ list });
     },
-    ...mapActions([
-      'insertSong',
-      "randomPlay"
-    ])
+    ...mapActions(["insertSong", "randomPlay"])
   }
 };
 </script>
