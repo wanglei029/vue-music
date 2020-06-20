@@ -7,6 +7,7 @@ const SEARCH_KEY = '__search__'
 /* 搜索列表最多缓存 15 条数据 超过15条就将最老的那个值删除 */
 const SEARCH_MAX_LEN = 15
 
+/* 播放历史 */
 const PLAY_KEY = '__play__'
 const PLAY_MAX_LEN = 200
 
@@ -79,15 +80,19 @@ export function loadSearch() {
   return storage.get(SEARCH_KEY, [])
 }
 
+/* 保存播放历史到本地缓存 */
 export function savePlay(song) {
+  /* 从本地读取播放历史 如果没有返回空数组 */
   let songs = storage.get(PLAY_KEY, [])
   insertArray(songs, song, (item) => {
     return song.id === item.id
   }, PLAY_MAX_LEN)
+  /* 把新的数组缓存到本地 */
   storage.set(PLAY_KEY, songs)
+  /* 返回新的数组 */
   return songs
 }
-
+/* 从本地缓存读取播放历史记录 */
 export function loadPlay() {
   return storage.get(PLAY_KEY, [])
 }

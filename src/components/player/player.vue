@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import Scroll from "base/scroll/scroll";
 import ProgressCircle from "base/progress-circle/progress-circle";
 import ProgressBar from "base/progress-bar/progress-bar";
@@ -324,6 +324,7 @@ export default {
     /* 控制切换歌曲 */
     ready() {
       this.songReady = true;
+      this.savePlayHistory(this.currentSong)
     },
     error() {
       this.songReady = true;
@@ -509,7 +510,10 @@ export default {
       setCurrentIndex: "SET_CURRENT_INDEX",
       setPlayMode: "SET_PLAY_MODE",
       setPlayList: "SET_PLAY_LIST"
-    })
+    }),
+    ...mapActions([
+      'savePlayHistory'
+    ])
   },
   watch: {
     currentSong(newSong, oldSong) {

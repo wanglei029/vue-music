@@ -8,6 +8,10 @@ import store from './store'
 
 import 'assets/stylus/index.styl'
 
+import VConsole from 'vconsole'
+// const vConsole=new VConsole()
+// Vue.use(vConsole)
+
 fastclick.attach(document.body) //页面点击 300毫秒延迟
 
 Vue.use(VueLazyload, {
