@@ -38,7 +38,8 @@ export function getSingerDetail(singerId) {
 
 export function getSongVkey(songmid) {
   // console.log('getSongVkey被调用',songmid);
-  const url = '/api/getMusicVKey'
+  // const url = '/api/getMusicVKey'
+  const url = 'http://music.aishangvip.com/api/getMusicVKey'
   const data = Object.assign({},  {
     songmid: songmid
   })

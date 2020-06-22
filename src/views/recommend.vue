@@ -2,8 +2,10 @@
   <div class="recommend" ref="recommend">
     <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
+        <!-- v-if="recommends.length" 当我们recommends有数据的时候dom才会渲染 -->
         <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
+            <!-- 遍历推荐数据 -->
             <div v-for="item in recommends" :key="item.id">
               <a :href="item.linkUrl">
                 <img class="needsclick" @load="loadImage" :src="item.picUrl" />
@@ -76,6 +78,9 @@ export default {
       });
       this.setDisc(item);
     },
+    /* 获取推荐数据 是一个异步的过程 可能会有延迟 当我们还没有获取到数据的时候 mounted就已经执行了
+      这样slider的slot插槽中是获取不到数据的
+    */
     _getRecommend() {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {

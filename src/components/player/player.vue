@@ -111,11 +111,12 @@
     <!-- 歌曲从加载到播放 会派发事件@canplay  发生错误的时候派发@error
       我们希望切换歌曲的时候 能够控制一下 不要连续的点击切换歌曲按钮 只有当歌曲ready的时候才能点击下一首歌
       可以用标志位来控制 songready
+      @canplay="ready" 改为 @play="ready" 防止歌曲快速切换错误
     -->
     <audio
       ref="audio"
       :src="currentSong.url"
-      @canplay="ready"
+      @play="ready"
       @error="error"
       @timeupdate="updateTime"
       @ended="end"
@@ -285,6 +286,7 @@ export default {
       /* 如果播放列表只有一首歌 */
       if (this.playlist.length === 1) {
         this.loop();
+        return
       } else {
         let index = this.currentIndex + 1;
         if (index === this.playlist.length) {
@@ -308,6 +310,7 @@ export default {
       /* 如果播放列表只有一首歌 */
       if (this.playlist.length === 1) {
         this.loop();
+        return
       } else {
         let index = this.currentIndex - 1;
         if (index === -1) {
@@ -382,6 +385,10 @@ export default {
       this.currentSong
         .getLyric()
         .then(lyric => {
+          /* 如果这首歌的歌词不等于lyric 就什么都不做 否则 */
+          if(this.currentSong.lyric!==lyric){
+            return
+          }
           console.log(lyric);
           this.currentLyric = new Lyric(lyric, this.handleLyric);
           if (this.playing) {
@@ -528,7 +535,9 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.stop();
       }
-      setTimeout(() => {
+      /* 保证无论歌曲切换了多少次 我们都只执行最后一次 */
+      clearTimeout(this.timer)
+      this.timer=setTimeout(() => {
         this.$refs.audio.play();
         this.getLyric();
       },1000);
